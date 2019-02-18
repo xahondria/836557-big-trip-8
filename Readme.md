@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Владимир Коломоец](https://up.htmlacademy.ru/ecmascript/8/user/836557).
-* Наставник: `Неизвестно`.
+* Наставник: [Вадим Шевяков](https://up.htmlacademy.ru/ecmascript/8/user/574589).
 
 ---
 
