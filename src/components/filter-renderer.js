@@ -1,4 +1,4 @@
-import filtersProps from "../mock/filters-data";
+import DATA from "../mock/filters-data";
 
 function renderFilter() {
   let container = document.querySelector(`.trip-filter`);
@@ -6,7 +6,7 @@ function renderFilter() {
 
   const fragment = document.createDocumentFragment();
 
-  filtersProps.forEach((props) => {
+  DATA.forEach((props) => {
     const newElement = document.createElement(`template`);
     newElement.innerHTML = `
         <input 
@@ -24,11 +24,8 @@ function renderFilter() {
           ${props.labelText}
         </label>
       `;
-
     fragment.appendChild(newElement.content);
-
   });
-
   container.appendChild(fragment);
 }
 

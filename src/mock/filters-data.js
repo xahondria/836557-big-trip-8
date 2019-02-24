@@ -1,4 +1,4 @@
-const filtersProps = [
+const FILTERS_DATA = [
   {
     id: `filter-everything`,
     value: `everything`,
@@ -22,4 +22,4 @@ const filtersProps = [
   },
 ];
 
-export default filtersProps;
+export default FILTERS_DATA;
