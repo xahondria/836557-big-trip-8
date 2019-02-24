@@ -1,1 +1,3 @@
-console.log(`hello world!`);
+import renderFilter from "./components/filter-renderer";
+
+renderFilter();
