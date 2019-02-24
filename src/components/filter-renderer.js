@@ -1,14 +1,28 @@
 import DATA from "../mock/filters-data";
+import tripPointsRenderer from "./trip-points-renderer";
 
-function renderFilter() {
-  let container = document.querySelector(`.trip-filter`);
-  container.innerHTML = ``;
+class FilterRenderer {
+  constructor() {
+    this.container = document.querySelector(`.trip-filter`);
+  }
 
-  const fragment = document.createDocumentFragment();
+  handleChange() {
+    const filters = this.container.querySelectorAll(`.trip-filter input`);
+    filters.forEach((filter) => {
+      filter.addEventListener(`change`, (ev) => {
+        tripPointsRenderer.setFilter(ev);
+      })
+    });
+  }
 
-  DATA.forEach((props) => {
-    const newElement = document.createElement(`template`);
-    newElement.innerHTML = `
+  render() {
+    this.container.innerHTML = ``;
+
+    const fragment = document.createDocumentFragment();
+
+    DATA.forEach((props) => {
+      const newElement = document.createElement(`template`);
+      newElement.innerHTML = `
         <input 
           type="radio" 
           id=${props.id} 
@@ -24,9 +38,13 @@ function renderFilter() {
           ${props.labelText}
         </label>
       `;
-    fragment.appendChild(newElement.content);
-  });
-  container.appendChild(fragment);
+      fragment.appendChild(newElement.content);
+    });
+    this.container.appendChild(fragment);
+
+    this.handleChange();
+  }
 }
 
-export default renderFilter;
+const filterRenderer = new FilterRenderer();
+export default filterRenderer;

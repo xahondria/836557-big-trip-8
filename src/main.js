@@ -1,6 +1,5 @@
-import renderFilter from "./components/filter-renderer";
+import filterRenderer from "./components/filter-renderer";
 import tripPointsRenderer from "./components/trip-points-renderer";
 
-
-renderFilter();
+filterRenderer.render();
 tripPointsRenderer.render();
