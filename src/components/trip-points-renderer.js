@@ -1,29 +1,13 @@
 import DATA from "../mock/trip-points-data";
+import utils from "./utils";
 
 class TripPointsRenderer {
   setFilter(ev) {
     ev.preventDefault();
-    ev.target.value === `everything` ?
+    return ev.target.value === `everything` ?
       this.render() :
-      this.render(this.getRandomElements(DATA, 4));
+      this.render(utils.getRandomEltsFromArray(DATA, 4));
   }
-
-  getRandomElements(inputArrayOfElements, maxNumberOfElements) {
-    inputArrayOfElements = inputArrayOfElements.slice();
-
-    if (inputArrayOfElements.length < maxNumberOfElements) {
-      maxNumberOfElements = inputArrayOfElements.length;
-    }
-    var randomElements = [];
-
-    while (randomElements.length < maxNumberOfElements) {
-      var randomIndex = Math.floor(Math.random() * inputArrayOfElements.length);
-      randomElements.push(inputArrayOfElements[randomIndex]);
-      inputArrayOfElements.splice(randomIndex, 1);
-    }
-    return randomElements;
-  }
-
 
   renderOffers(offers) {
     let offerItems = ``;
@@ -51,7 +35,7 @@ class TripPointsRenderer {
       newElement.innerHTML = `
         <article class="trip-point">
           <i class="trip-icon">${props.icon}</i>
-          <h3 class="trip-point__title">${props.title}</h3>
+          <h3 class="trip-point__title">${props.tripType} to ${props.city}</h3>
           <p class="trip-point__schedule">
             <span class="trip-point__timetable">${props.timetable}</span>
             <span class="trip-point__duration">${props.duration}</span>
