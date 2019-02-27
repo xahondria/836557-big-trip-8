@@ -40,7 +40,7 @@ class TripPoint {
     this.timetable = `22:00&nbsp;&mdash; 07:00`;
     this.duration = `2h 40m`;
     this.price = `&euro;&nbsp;20`;
-    this.offers = utils.getRandomEltsFromArray([...DATA.offers], 2);
+    this.offers = utils.getRandomElementsFromArray([...DATA.offers], 2);
   }
 }
 

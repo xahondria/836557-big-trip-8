@@ -6,7 +6,7 @@ class TripPointsRenderer {
     ev.preventDefault();
     return ev.target.value === `everything` ?
       this.render() :
-      this.render(utils.getRandomEltsFromArray(DATA, 4));
+      this.render(utils.getRandomElementsFromArray(DATA, 4));
   }
 
   renderOffers(offers) {

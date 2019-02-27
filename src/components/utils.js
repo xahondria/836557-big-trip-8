@@ -4,7 +4,7 @@ class Utils {
     return keys[keys.length * Math.random() << 0];
   }
 
-  getRandomEltsFromArray(arr, newArrMaxLength) {
+  getRandomElementsFromArray(arr, newArrMaxLength) {
     arr = arr.slice();
     let newArr = [];
     const newArrLength = Math.floor(Math.random() * (newArrMaxLength + 1));
