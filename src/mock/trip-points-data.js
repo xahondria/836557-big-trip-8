@@ -1,4 +1,4 @@
-import utils from "../components/utils";
+import Utils from "../components/utils";
 
 const DATA = {
   tripTypes: {
@@ -34,13 +34,13 @@ const DATA = {
 
 class TripPoint {
   constructor() {
-    this.tripType = utils.getRandomKeyFromObject(DATA.tripTypes);
+    this.tripType = Utils.getRandomKeyFromObject(DATA.tripTypes);
     this.icon = DATA.tripTypes[this.tripType];
     this.city = [...DATA.cities][[...DATA.cities].length * Math.random() << 0];
     this.timetable = `22:00&nbsp;&mdash; 07:00`;
     this.duration = `2h 40m`;
     this.price = `&euro;&nbsp;20`;
-    this.offers = utils.getRandomElementsFromArray([...DATA.offers], 2);
+    this.offers = Utils.getRandomElementsFromArray([...DATA.offers], 2);
   }
 }
 

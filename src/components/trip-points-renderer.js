@@ -1,12 +1,12 @@
 import DATA from "../mock/trip-points-data";
-import utils from "./utils";
+import Utils from "./utils";
 
 class TripPointsRenderer {
   setFilter(ev) {
     ev.preventDefault();
     return ev.target.value === `everything` ?
       this.render() :
-      this.render(utils.getRandomElementsFromArray(DATA, 4));
+      this.render(Utils.getRandomElementsFromArray(DATA, 4));
   }
 
   renderOffers(offers) {
