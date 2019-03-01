@@ -33,7 +33,7 @@ const DATA = {
 };
 
 function generateTripPoint() {
-  const TripPoint = {
+  const tripPoint = {
     tripType: Utils.getRandomKeyFromObject(DATA.tripTypes),
     city: DATA.cities[DATA.cities.length * Math.random() << 0],
     timetable: `22:00&nbsp;&mdash; 07:00`,
@@ -42,17 +42,11 @@ function generateTripPoint() {
     offers: Utils.getRandomElementsFromArray([...DATA.offers], Utils.getRandomInt(2)),
   };
 
-  TripPoint.icon = DATA.tripTypes[TripPoint.tripType];
+  tripPoint.icon = DATA.tripTypes[tripPoint.tripType];
 
-  return TripPoint;
+  return tripPoint;
 }
 
-
-const TRIP_POINTS_DATA = [
-  generateTripPoint(),
-  generateTripPoint(),
-  generateTripPoint(),
-  generateTripPoint(),
-];
+const TRIP_POINTS_DATA = [...Array(4)].map(generateTripPoint);
 
 export default TRIP_POINTS_DATA;
