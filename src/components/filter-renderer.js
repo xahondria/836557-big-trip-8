@@ -11,7 +11,7 @@ class FilterRenderer {
     filters.forEach((filter) => {
       filter.addEventListener(`change`, (ev) => {
         tripPointsRenderer.setFilter(ev);
-      })
+      });
     });
   }
 
