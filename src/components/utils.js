@@ -5,17 +5,23 @@ const Utils = {
 
   getRandomKeyFromObject(obj) {
     const keys = Object.keys(obj);
-    return keys[keys.length * Math.random() << 0];
+    return keys[this.getRandomInt(keys.length - 1)];
   },
 
-  getRandomElementsFromArray(arr, newArrMaxLength) {
-    arr = arr.slice();
-    let newArr = [];
-    const newArrLength = Math.floor(Math.random() * (newArrMaxLength + 1));
-    for (let i = 0; i < newArrLength; i++) {
-      const randomIdx = Math.floor(Math.random() * arr.length);
-      newArr[i] = arr[randomIdx];
-      arr.splice(randomIdx, 1);
+  getRandomElementsFromArray(arr, newArrLength) {
+    if (newArrLength > arr.length) {
+      throw new RangeError(`getRandomElementsFromArray:  more elements taken than available`);
+    }
+
+    const randomArrIndexes = new Set();
+
+    while (randomArrIndexes.size < newArrLength) {
+      randomArrIndexes.add(Math.floor(Math.random() * arr.length));
+    }
+    const newArr = new Array(newArrLength);
+
+    for (let el of [...randomArrIndexes]) {
+      newArr[[...randomArrIndexes].indexOf(el)] = arr[el];
     }
 
     return newArr;
