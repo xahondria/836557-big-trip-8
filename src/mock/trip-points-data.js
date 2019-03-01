@@ -32,23 +32,27 @@ const DATA = {
   description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`,
 };
 
-class TripPoint {
-  constructor() {
-    this.tripType = Utils.getRandomKeyFromObject(DATA.tripTypes);
-    this.icon = DATA.tripTypes[this.tripType];
-    this.city = [...DATA.cities][[...DATA.cities].length * Math.random() << 0];
-    this.timetable = `22:00&nbsp;&mdash; 07:00`;
-    this.duration = `2h 40m`;
-    this.price = `&euro;&nbsp;20`;
-    this.offers = Utils.getRandomElementsFromArray([...DATA.offers], 2);
-  }
+function generateTripPoint() {
+  const TripPoint = {
+    tripType: Utils.getRandomKeyFromObject(DATA.tripTypes),
+    city: DATA.cities[DATA.cities.length * Math.random() << 0],
+    timetable: `22:00&nbsp;&mdash; 07:00`,
+    duration: `2h 40m`,
+    price: `&euro;&nbsp;20`,
+    offers: Utils.getRandomElementsFromArray([...DATA.offers], Utils.getRandomInt(2)),
+  };
+
+  TripPoint.icon = DATA.tripTypes[TripPoint.tripType];
+
+  return TripPoint;
 }
 
+
 const TRIP_POINTS_DATA = [
-  new TripPoint(),
-  new TripPoint(),
-  new TripPoint(),
-  new TripPoint(),
+  generateTripPoint(),
+  generateTripPoint(),
+  generateTripPoint(),
+  generateTripPoint(),
 ];
 
 export default TRIP_POINTS_DATA;
