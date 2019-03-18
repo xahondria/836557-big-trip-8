@@ -1,4 +1,4 @@
-import Utils from "../components/utils";
+import utils from "../utils";
 
 const DATA = {
   tripTypes: {
@@ -34,12 +34,12 @@ const DATA = {
 
 function generateTripPoint() {
   const tripPoint = {
-    tripType: Utils.getRandomKeyFromObject(DATA.tripTypes),
+    tripType: utils.getRandomKeyFromObject(DATA.tripTypes),
     city: DATA.cities[DATA.cities.length * Math.random() << 0],
     timetable: `22:00&nbsp;&mdash; 07:00`,
     duration: `2h 40m`,
     price: `&euro;&nbsp;20`,
-    offers: Utils.getRandomElementsFromArray([...DATA.offers], Utils.getRandomInt(2)),
+    offers: utils.getRandomElementsFromArray([...DATA.offers], utils.getRandomInt(2)),
   };
 
   tripPoint.icon = DATA.tripTypes[tripPoint.tripType];
