@@ -1,5 +1,6 @@
 import Component from "./component";
 import tripPointOffers from "./trip-point-offers";
+import TripPointEdit from "./trip-point-edit";
 
 class TripPoint extends Component {
   constructor(data) {
@@ -13,6 +14,9 @@ class TripPoint extends Component {
       price: data.price,
       offers: data.offers,
     };
+
+    this._onClick = this._onClick.bind(this);
+
   }
 
   get template() {
@@ -30,6 +34,17 @@ class TripPoint extends Component {
         </ul>
       </article>
     `.trim();
+  }
+
+  _onClick(ev) {
+    ev.preventDefault();
+    const element = ev.currentTarget;
+    element.replaceWith(new TripPointEdit(this._state).render());
+  }
+
+  bind() {
+    this._fragment.querySelector(`.trip-point`)
+      .addEventListener(`click`, this._onClick);
   }
 }
 
