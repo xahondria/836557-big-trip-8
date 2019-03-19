@@ -1,3 +1,4 @@
+import flatpickr from "flatpickr";
 import Component from "./component";
 import TripPoint from "./trip-point";
 import tripPointEditDestinations from "./trip-point-edit-destinations";
@@ -38,6 +39,8 @@ class TripPointEdit extends Component {
       price: data.price,
       offers: data.offers,
     };
+    this.calendar = null;
+    this.timePicker = null;
 
     this._onSubmit = this._onSubmit.bind(this);
     this._onTripTypeChange = this._onTripTypeChange.bind(this);
@@ -49,7 +52,7 @@ class TripPointEdit extends Component {
       <article class="point">
         <form class="point__form" action="" method="get">
           <header class="point__header">
-            <label class="point__date">
+            <label class="point__date" style="display: block">
               choose day
               <input class="point__input" type="text" placeholder="MAR 18" name="day">
             </label>
@@ -221,6 +224,12 @@ class TripPointEdit extends Component {
   }
 
   _destroyFlatpickr() {
+    if (this.calendar) {
+      this.calendar.destroy();
+    }
+    if (this.timePicker) {
+      this.timePicker.destroy();
+    }
   }
 
   _onSubmit(ev) {
@@ -250,9 +259,22 @@ class TripPointEdit extends Component {
       .addEventListener(`change`, this._onTripTypeChange);
     this._fragment.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onDestinationChange);
+
+    this.calendar = flatpickr(
+        this._fragment.querySelector(`.point__date .point__input`),
+        {
+          dateFormat: `M j`,
+        }
+    );
+    this.timePicker = flatpickr(
+        this._fragment.querySelector(`.point__time .point__input`),
+        {
+          enableTime: true,
+          noCalendar: true,
+          dateFormat: `H:i`,
+        }
+    );
   }
-
-
 }
 
 export default TripPointEdit;
