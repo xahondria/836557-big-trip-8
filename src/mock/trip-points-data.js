@@ -2,16 +2,16 @@ import utils from "../utils";
 
 const DATA = {
   tripTypes: {
-    'Taxi': `🚕`,
-    'Bus': `🚌`,
-    'Train': `🚂`,
-    'Ship': `🛳️`,
-    'Transport': `🚊`,
-    'Drive': `🚗`,
-    'Flight': `✈`,
-    'Check-in': `🏨`,
-    'Sightseeing': `🏛`,
-    'Restaurant': `🍴`,
+    'taxi': `🚕`,
+    'bus': `🚌`,
+    'train': `🚂`,
+    'ship': `🛳️`,
+    'transport': `🚊`,
+    'drive': `🚗`,
+    'flight': `✈`,
+    'check-in': `🏨`,
+    'sight-seeing': `🏛`,
+    'restaurant': `🍴`,
   },
   cities: [
     `Baghdad`,
@@ -33,18 +33,17 @@ const DATA = {
 };
 
 function generateTripPoint() {
-  const tripPoint = {
+  return {
     tripType: utils.getRandomKeyFromObject(DATA.tripTypes),
     city: DATA.cities[DATA.cities.length * Math.random() << 0],
     timetable: `22:00&nbsp;&mdash; 07:00`,
     duration: `2h 40m`,
     price: `&euro;&nbsp;20`,
     offers: utils.getRandomElementsFromArray([...DATA.offers], utils.getRandomInt(2)),
+    get icon() {
+      return DATA.tripTypes[this.tripType];
+    },
   };
-
-  tripPoint.icon = DATA.tripTypes[tripPoint.tripType];
-
-  return tripPoint;
 }
 
 const TRIP_POINTS_DATA = [...Array(4)].map(generateTripPoint);

@@ -1,9 +1,34 @@
 import Component from "./component";
 import TripPoint from "./trip-point";
+import tripPointEditDestinations from "./trip-point-edit-destinations";
 
 class TripPointEdit extends Component {
   constructor(data) {
     super();
+    this._props = {
+      tripTypes: {
+        'taxi': `🚕`,
+        'bus': `🚌`,
+        'train': `🚂`,
+        'ship': `🛳️`,
+        'transport': `🚊`,
+        'drive': `🚗`,
+        'flight': `✈`,
+        'check-in': `🏨`,
+        'sight-seeing': `🏛`,
+        'restaurant': `🍴`,
+      },
+      cities: [
+        `Baghdad`,
+        `Bahia Blanca`,
+        `Baku`,
+        `Bandung`,
+        `Bangalore`,
+        `Bangkok`,
+        `Banjul`,
+        `Barcelona`,
+      ],
+    };
     this._state = {
       icon: data.icon,
       tripType: data.tripType,
@@ -15,12 +40,14 @@ class TripPointEdit extends Component {
     };
 
     this._onSubmit = this._onSubmit.bind(this);
+    this._onTripTypeChange = this._onTripTypeChange.bind(this);
+    this._onDestinationChange = this._onDestinationChange.bind(this);
   }
 
   get template() {
     return `
       <article class="point">
-        <form action="" method="get">
+        <form class="point__form" action="" method="get">
           <header class="point__header">
             <label class="point__date">
               choose day
@@ -28,43 +55,85 @@ class TripPointEdit extends Component {
             </label>
       
             <div class="travel-way">
-              <label class="travel-way__label" for="travel-way__toggle">✈️</label>
+              <label class="travel-way__label" for="travel-way__toggle">${this._state.icon}️</label>
       
               <input type="checkbox" class="travel-way__toggle visually-hidden" id="travel-way__toggle">
       
               <div class="travel-way__select">
                 <div class="travel-way__select-group">
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-taxi" name="travel-way" value="taxi">
+                  <input 
+                    class="travel-way__select-input visually-hidden" 
+                    type="radio" 
+                    id="travel-way-taxi" 
+                    name="travel-way" 
+                    value="taxi" 
+                    ${this._state.tripType === `taxi` && `checked`}   
+                  >
                   <label class="travel-way__select-label" for="travel-way-taxi">🚕 taxi</label>
       
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-bus" name="travel-way" value="bus">
+                  <input 
+                    class="travel-way__select-input visually-hidden" 
+                    type="radio" 
+                    id="travel-way-bus" 
+                    name="travel-way" 
+                    value="bus" 
+                    ${this._state.tripType === `bus` && `checked`}   
+                  >
                   <label class="travel-way__select-label" for="travel-way-bus">🚌 bus</label>
       
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-train" name="travel-way" value="train">
+                  <input 
+                    class="travel-way__select-input visually-hidden" 
+                    type="radio" 
+                    id="travel-way-train" 
+                    name="travel-way" 
+                    value="train" 
+                    ${this._state.tripType === `train` && `checked`}   
+                  >
                   <label class="travel-way__select-label" for="travel-way-train">🚂 train</label>
       
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="train" checked>
+                  <input 
+                    class="travel-way__select-input visually-hidden" 
+                    type="radio" id="travel-way-flight" 
+                    name="travel-way" 
+                    value="flight" 
+                    ${this._state.tripType === `flight` && `checked`}   
+                  >
                   <label class="travel-way__select-label" for="travel-way-flight">✈️ flight</label>
                 </div>
       
                 <div class="travel-way__select-group">
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-check-in" name="travel-way" value="check-in">
+                  <input 
+                    class="travel-way__select-input visually-hidden" 
+                    type="radio" id="travel-way-check-in" 
+                    name="travel-way" 
+                    value="check-in" 
+                    ${this._state.tripType === `check-in` && `checked`}   
+                  >
                   <label class="travel-way__select-label" for="travel-way-check-in">🏨 check-in</label>
       
-                  <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travel-way" value="sight-seeing">
+                  <input 
+                    class="travel-way__select-input visually-hidden" 
+                    type="radio" id="travel-way-sightseeing" 
+                    name="travel-way" 
+                    value="sight-seeing" 
+                    ${this._state.tripType === `sight-seeing` && `checked`}   
+                  >
                   <label class="travel-way__select-label" for="travel-way-sightseeing">🏛 sightseeing</label>
                 </div>
               </div>
             </div>
       
             <div class="point__destination-wrap">
-              <label class="point__destination-label" for="destination">Flight to</label>
-              <input class="point__destination-input" list="destination-select" id="destination" value="Chamonix" name="destination">
+              <label class="point__destination-label" for="destination">${this._state.tripType} to</label>
+              <input 
+                class="point__destination-input" 
+                list="destination-select" 
+                id="destination" 
+                value=${this._state.city} 
+                name="destination"
+              >
               <datalist id="destination-select">
-                <option value="airport"></option>
-                <option value="Geneva"></option>
-                <option value="Chamonix"></option>
-                <option value="hotel"></option>
+                ${tripPointEditDestinations(this._props.cities)}
               </datalist>
             </div>
       
@@ -162,9 +231,25 @@ class TripPointEdit extends Component {
     this._destroyFlatpickr();
   }
 
+  _onTripTypeChange(ev) {
+    ev.preventDefault();
+    this._state.tripType = ev.target.value;
+    this._state.icon = this._props.tripTypes[this._state.tripType];
+    this.updateComponent(ev.target.closest(`.point`));
+  }
+
+  _onDestinationChange(ev) {
+    ev.preventDefault();
+    this._state.city = ev.target.value;
+  }
+
   bind() {
-    this._fragment.querySelector(`.point__button--save`)
+    this._fragment.querySelector(`.point__form`)
       .addEventListener(`submit`, this._onSubmit);
+    this._fragment.querySelector(`.travel-way__select`)
+      .addEventListener(`change`, this._onTripTypeChange);
+    this._fragment.querySelector(`.point__destination-input`)
+      .addEventListener(`change`, this._onDestinationChange);
   }
 
 
