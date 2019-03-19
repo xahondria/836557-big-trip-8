@@ -1,9 +1,13 @@
 import Component from "./component";
 import tripPointOffers from "./trip-point-offers";
-import TripPointEdit from "./trip-point-edit";
 
 class TripPoint extends Component {
-  constructor(data) {
+  /**
+   * @param {Object} data - input data for component
+   * @param {Object} options - options of TripPoint
+   * @param {Function} options.onClick - event handler that will be bind for click, second argument is a reference to current TripPoint
+   */
+  constructor(data, options = {}) {
     super();
     this._state = {
       icon: data.icon,
@@ -14,9 +18,7 @@ class TripPoint extends Component {
       price: data.price,
       offers: data.offers,
     };
-
-    this._onClick = this._onClick.bind(this);
-
+    this.onEdit = typeof options.onEdit === `function` ? options.onEdit : null;
   }
 
   get template() {
@@ -36,15 +38,11 @@ class TripPoint extends Component {
     `.trim();
   }
 
-  _onClick(ev) {
-    ev.preventDefault();
-    const element = ev.currentTarget;
-    element.replaceWith(new TripPointEdit(this._state).render());
-  }
-
   bind() {
-    this._fragment.querySelector(`.trip-point`)
-      .addEventListener(`click`, this._onClick);
+    if (this.onEdit) {
+      this._fragment.querySelector(`.trip-point`)
+        .addEventListener(`click`, (ev) => this.onEdit(ev, this));
+    }
   }
 }
 

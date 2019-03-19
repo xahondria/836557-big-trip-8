@@ -4,7 +4,7 @@ import TripPoint from "./trip-point";
 import tripPointEditDestinations from "./trip-point-edit-destinations";
 
 class TripPointEdit extends Component {
-  constructor(data) {
+  constructor(data, options = {}) {
     super();
     this._props = {
       tripTypes: {
@@ -45,6 +45,9 @@ class TripPointEdit extends Component {
     this._onSubmit = this._onSubmit.bind(this);
     this._onTripTypeChange = this._onTripTypeChange.bind(this);
     this._onDestinationChange = this._onDestinationChange.bind(this);
+
+    this.onSave = typeof options.onSave === `function` ? options.onSave : null;
+    this.onClose = typeof options.onClose === `function` ? options.onClose : null;
   }
 
   get template() {

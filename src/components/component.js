@@ -15,8 +15,15 @@ class Component {
   bind() {
   }
 
+  unbind() {
+  }
+
   updateComponent(element) {
+    if (element._currentComponent) {
+      element._currentComponent.unbind();
+    }
     element.replaceWith(this.render());
+    element._currentComponent = this;
   }
 
   createFragment(template) {
@@ -25,9 +32,11 @@ class Component {
 
   render() {
     this._fragment = this.createFragment(this.template);
+    this._fragment._currentComponent = this;
     this.bind();
     return this._fragment;
   }
+
 }
 
 export default Component;
