@@ -1,9 +1,14 @@
 import flatpickr from "flatpickr";
 import Component from "./component";
-import TripPoint from "./trip-point";
 import tripPointEditDestinations from "./trip-point-edit-destinations";
 
 class TripPointEdit extends Component {
+  /**
+   * @param {Object} data - input data for component
+   * @param {Object} options - options of TripPointEdit
+   * @param {Function} options.onSave - event handler that will be bind for onSubmit event, second argument is a reference to current TripPointEdit
+   * @param {Function} options.onClose - event handler that will be bind for keydown "Escape" event, second argument is a reference to current TripPointEdit
+   */
   constructor(data, options = {}) {
     super();
     this._props = {
@@ -39,10 +44,10 @@ class TripPointEdit extends Component {
       price: data.price,
       offers: data.offers,
     };
+
     this.calendar = null;
     this.timePicker = null;
 
-    this._onSubmit = this._onSubmit.bind(this);
     this._onTripTypeChange = this._onTripTypeChange.bind(this);
     this._onDestinationChange = this._onDestinationChange.bind(this);
 
@@ -235,14 +240,6 @@ class TripPointEdit extends Component {
     }
   }
 
-  _onSubmit(ev) {
-    ev.preventDefault();
-    const element = ev.target.closest(`.point`);
-    this._getFormData(element);
-    element.replaceWith(new TripPoint(this._state).render());
-    this._destroyFlatpickr();
-  }
-
   _onTripTypeChange(ev) {
     ev.preventDefault();
     this._state.tripType = ev.target.value;
@@ -256,8 +253,11 @@ class TripPointEdit extends Component {
   }
 
   bind() {
-    this._fragment.querySelector(`.point__form`)
-      .addEventListener(`submit`, this._onSubmit);
+    if (this.onSave) {
+      this._fragment.querySelector(`.point__form`)
+        .addEventListener(`submit`, (ev) => this.onSave(ev, this));
+    }
+
     this._fragment.querySelector(`.travel-way__select`)
       .addEventListener(`change`, this._onTripTypeChange);
     this._fragment.querySelector(`.point__destination-input`)
@@ -267,16 +267,15 @@ class TripPointEdit extends Component {
         this._fragment.querySelector(`.point__date .point__input`),
         {
           dateFormat: `M j`,
-        }
-    );
+        });
+
     this.timePicker = flatpickr(
         this._fragment.querySelector(`.point__time .point__input`),
         {
           enableTime: true,
           noCalendar: true,
           dateFormat: `H:i`,
-        }
-    );
+        });
   }
 }
 

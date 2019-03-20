@@ -16,6 +16,7 @@ class Component {
   }
 
   unbind() {
+    //  TODO написать unbind
   }
 
   updateComponent(element) {
@@ -35,6 +36,10 @@ class Component {
     this._fragment._currentComponent = this;
     this.bind();
     return this._fragment;
+  }
+
+  unrender() {
+    //  TODO написать unrender
   }
 
 }

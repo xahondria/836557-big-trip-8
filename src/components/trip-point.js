@@ -5,7 +5,7 @@ class TripPoint extends Component {
   /**
    * @param {Object} data - input data for component
    * @param {Object} options - options of TripPoint
-   * @param {Function} options.onClick - event handler that will be bind for click, second argument is a reference to current TripPoint
+   * @param {Function} options.onEdit - event handler that will be bind for event, second argument is a reference to current TripPoint
    */
   constructor(data, options = {}) {
     super();

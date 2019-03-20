@@ -12,23 +12,41 @@ utils.renderComponent(
     {},
     `filters`);
 
+const tripPointOptions = () => {
+  return {
+    onEdit(ev, tripPoint) {
+      ev.preventDefault();
+      const element = ev.currentTarget;
+      const newElement = Object.assign({}, tripPoint._state);
+
+      element.replaceWith(new TripPointEdit(
+          newElement,
+          tripPointEditOptions(tripPoint))
+        .render());
+    },
+  };
+};
+
+const tripPointEditOptions = (tripPoint) => {
+  return {
+    onSave(ev, tripPointEdit) {
+      const element = ev.currentTarget.closest(`.point`);
+      ev.preventDefault();
+      tripPoint._state = Object.assign({}, tripPointEdit._state);
+      tripPoint.updateComponent(element);
+    },
+    // onClose(_ev, _tripPointEdit) {
+    //   ev.preventDefault();
+    //
+    //   tripPoint.updateComponent(element);
+    // },
+  };
+};
+
+
 utils.renderComponent(
     document.querySelector(`.trip-day__items`),
     TRIP_POINTS_DATA,
     TripPoint,
-    {
-      onEdit(ev, tripPoint) {
-        ev.preventDefault();
-        const element = ev.currentTarget;
-        element.replaceWith(new TripPointEdit(Object.assign({}, tripPoint._state), {
-          onSave(newState, _tripPointEdit) {
-            tripPoint._state = Object.assign({}, newState);
-            tripPoint.updateComponent(element);
-          },
-          onClose(_ev, _tripPointEdit) {
-            tripPoint.updateComponent(element);
-          }
-        }).render());
-      },
-    },
+    tripPointOptions(),
     `tripPoints`);
