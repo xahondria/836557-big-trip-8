@@ -19,6 +19,8 @@ class TripPoint extends Component {
       offers: data.offers,
     };
     this.onEdit = typeof options.onEdit === `function` ? options.onEdit : null;
+    this.onEdit = this.onEdit.bind(this);
+
   }
 
   get template() {
@@ -40,9 +42,11 @@ class TripPoint extends Component {
 
   bind() {
     if (this.onEdit) {
-      this._fragment.querySelector(`.trip-point`)
-        .addEventListener(`click`, (ev) => this.onEdit(ev, this));
+      this._element.addEventListener(`click`, this.onEdit);
     }
+  }
+
+  unbind() {
   }
 }
 

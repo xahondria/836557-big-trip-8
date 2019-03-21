@@ -5,24 +5,29 @@ import utils from "./utils";
 import FILTERS_DATA from "./mock/filters-data";
 import TripPointEdit from "./components/trip-point-edit";
 
-utils.renderComponent(
-    document.querySelector(`.trip-filter`),
+utils.defineCurrentlyRenderedObjects(
     FILTERS_DATA,
     Filter,
     {},
     `filters`);
 
+utils.renderComponent(
+    document.querySelector(`.trip-filter`),
+    `filters`);
+
 const tripPointOptions = () => {
   return {
-    onEdit(ev, tripPoint) {
+    onEdit(ev) {
       ev.preventDefault();
       const element = ev.currentTarget;
-      const newElement = Object.assign({}, tripPoint._state);
+      const newElementState = Object.assign({}, this._state);
 
-      element.replaceWith(new TripPointEdit(
-          newElement,
-          tripPointEditOptions(tripPoint))
-        .render());
+      this.unbind();
+      const tripPointEditElement = new TripPointEdit(
+          newElementState,
+          tripPointEditOptions(this))
+        .render();
+      element.replaceWith(tripPointEditElement);
     },
   };
 };
@@ -32,21 +37,26 @@ const tripPointEditOptions = (tripPoint) => {
     onSave(ev, tripPointEdit) {
       const element = ev.currentTarget.closest(`.point`);
       ev.preventDefault();
+      tripPointEdit._destroyFlatpickr();
       tripPoint._state = Object.assign({}, tripPointEdit._state);
       tripPoint.updateComponent(element);
     },
-    // onClose(_ev, _tripPointEdit) {
-    //   ev.preventDefault();
-    //
-    //   tripPoint.updateComponent(element);
-    // },
+    onClose(ev) {
+      ev.preventDefault();
+      if (ev.key === `Escape`) {
+        this._destroyFlatpickr();
+        tripPoint.updateComponent(this._currentHTMLElement);
+      }
+    },
   };
 };
 
-
-utils.renderComponent(
-    document.querySelector(`.trip-day__items`),
+utils.defineCurrentlyRenderedObjects(
     TRIP_POINTS_DATA,
     TripPoint,
     tripPointOptions(),
+    `tripPoints`);
+
+utils.renderComponent(
+    document.querySelector(`.trip-day__items`),
     `tripPoints`);

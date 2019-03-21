@@ -48,11 +48,13 @@ class TripPointEdit extends Component {
     this.calendar = null;
     this.timePicker = null;
 
-    this._onTripTypeChange = this._onTripTypeChange.bind(this);
-    this._onDestinationChange = this._onDestinationChange.bind(this);
-
     this.onSave = typeof options.onSave === `function` ? options.onSave : null;
     this.onClose = typeof options.onClose === `function` ? options.onClose : null;
+
+    this._onTripTypeChange = this._onTripTypeChange.bind(this);
+    this._onDestinationChange = this._onDestinationChange.bind(this);
+    this.onClose = this.onClose.bind(this);
+
   }
 
   get template() {
@@ -254,29 +256,38 @@ class TripPointEdit extends Component {
 
   bind() {
     if (this.onSave) {
-      this._fragment.querySelector(`.point__form`)
+      this._element.querySelector(`.point__form`)
         .addEventListener(`submit`, (ev) => this.onSave(ev, this));
     }
 
-    this._fragment.querySelector(`.travel-way__select`)
+    if (this.onClose) {
+      document.addEventListener(`keydown`, this.onClose);
+    }
+
+    this._element.querySelector(`.travel-way__select`)
       .addEventListener(`change`, this._onTripTypeChange);
-    this._fragment.querySelector(`.point__destination-input`)
+    this._element.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onDestinationChange);
 
     this.calendar = flatpickr(
-        this._fragment.querySelector(`.point__date .point__input`),
+        this._element.querySelector(`.point__date .point__input`),
         {
           dateFormat: `M j`,
         });
 
     this.timePicker = flatpickr(
-        this._fragment.querySelector(`.point__time .point__input`),
+        this._element.querySelector(`.point__time .point__input`),
         {
           enableTime: true,
           noCalendar: true,
           dateFormat: `H:i`,
         });
   }
+
+  unbind() {
+    document.removeEventListener(`keydown`, this.onClose);
+  }
+
 }
 
 export default TripPointEdit;

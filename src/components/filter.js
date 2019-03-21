@@ -3,6 +3,8 @@ import utils from "../utils";
 import TRIP_POINTS_DATA from "../mock/trip-points-data";
 import TripPoint from "./trip-point";
 
+// TODO при смене фильтра ломаются обработчики событий на tripPoint
+
 class Filter extends Component {
   constructor(data) {
     super();
@@ -34,6 +36,17 @@ class Filter extends Component {
         ${this._state.labelText}
       </label>
     `.trim();
+  }
+
+  createFragment(template) {
+    return document.createRange().createContextualFragment(template);
+  }
+
+  render() {
+    this._fragment = this.createFragment(this.template);
+    this._fragment._currentComponent = this;
+    this.bind();
+    return this._fragment;
   }
 
   _onChange(ev) {

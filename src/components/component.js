@@ -5,6 +5,7 @@ class Component {
     }
 
     this._fragment = null;
+    this._element = null;
     this._state = {};
   }
 
@@ -16,26 +17,30 @@ class Component {
   }
 
   unbind() {
-    //  TODO написать unbind
   }
 
   updateComponent(element) {
     if (element._currentComponent) {
       element._currentComponent.unbind();
     }
-    element.replaceWith(this.render());
-    element._currentComponent = this;
+    const newElement = this.render();
+    element.replaceWith(newElement);
+    newElement._currentComponent = this;
+    newElement._currentComponent._currentHTMLElement = newElement;
   }
 
-  createFragment(template) {
-    return document.createRange().createContextualFragment(template);
+  createElement(template) {
+    const newElement = document.createElement(`div`);
+    newElement.innerHTML = template;
+    return newElement.firstChild;
   }
 
   render() {
-    this._fragment = this.createFragment(this.template);
-    this._fragment._currentComponent = this;
+    this._element = this.createElement(this.template);
+    this._element._currentComponent = this;
+    this._element._currentComponent._currentHTMLElement = this._element;
     this.bind();
-    return this._fragment;
+    return this._element;
   }
 
   unrender() {

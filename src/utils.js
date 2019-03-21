@@ -36,14 +36,12 @@ const utils = {
   },
 
   /**
-   * @param {object} container
    * @param {array} data массив объектов, на основе которых формируются компоненты
    * @param {class} Component
    * @param {Object} options - дополнительные опции для компонента
    * @param {string} componentsName название массива, в котором будут храниться отрендеренные компоненты
    */
-  renderComponent(container, data, Component, options, componentsName) {
-    container.innerHTML = ``;
+  defineCurrentlyRenderedObjects(data, Component, options, componentsName) {
     Object.defineProperty(currentlyRenderedObjects, componentsName, {
       value: [],
       writable: true,
@@ -52,8 +50,19 @@ const utils = {
     data.forEach((el) => {
       currentlyRenderedObjects[componentsName].push(new Component(el, options));
     });
+  },
 
-    utils.renderElements(container, currentlyRenderedObjects[componentsName].map((el) => el.render()));
+
+  /**
+   * @param {object} container
+   * @param {string} componentsName название массива, в котором будут храниться отрендеренные компоненты
+   */
+  renderComponent(container, componentsName) {
+    container.innerHTML = ``;
+
+    utils.renderElements(container, currentlyRenderedObjects[componentsName].map((el) => {
+      return el.render();
+    }));
   },
 };
 
