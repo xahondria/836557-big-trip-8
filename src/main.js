@@ -42,8 +42,8 @@ const tripPointEditOptions = (tripPoint) => {
       tripPoint.updateComponent(element);
     },
     onClose(ev) {
-      ev.preventDefault();
       if (ev.key === `Escape`) {
+        ev.preventDefault();
         this._destroyFlatpickr();
         tripPoint.updateComponent(this._currentHTMLElement);
       }

@@ -13,9 +13,12 @@ class TripPoint extends Component {
       icon: data.icon,
       tripType: data.tripType,
       city: data.city,
+      date: data.date,
+      time: data.time,
       timetable: data.timetable,
       duration: data.duration,
       price: data.price,
+      isFavorite: data.isFavorite,
       offers: data.offers,
     };
     this.onEdit = typeof options.onEdit === `function` ? options.onEdit : null;
@@ -32,7 +35,7 @@ class TripPoint extends Component {
           <span class="trip-point__timetable">${this._state.timetable}</span>
           <span class="trip-point__duration">${this._state.duration}</span>
         </p>
-        <p class="trip-point__price">${this._state.price}</p>
+        <p class="trip-point__price">&euro;&nbsp;${this._state.price}</p>
         <ul class="trip-point__offers">
           ${tripPointOffers(this._state.offers)}
         </ul>

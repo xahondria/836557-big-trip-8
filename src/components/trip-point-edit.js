@@ -1,6 +1,7 @@
 import flatpickr from "flatpickr";
 import Component from "./component";
 import tripPointEditDestinations from "./trip-point-edit-destinations";
+import moment from "moment";
 
 class TripPointEdit extends Component {
   /**
@@ -39,9 +40,12 @@ class TripPointEdit extends Component {
       icon: data.icon,
       tripType: data.tripType,
       city: data.city,
+      date: data.date,
+      time: data.time,
       timetable: data.timetable,
       duration: data.duration,
       price: data.price,
+      isFavorite: data.isFavorite,
       offers: data.offers,
     };
 
@@ -54,6 +58,10 @@ class TripPointEdit extends Component {
     this._onTripTypeChange = this._onTripTypeChange.bind(this);
     this._onDestinationChange = this._onDestinationChange.bind(this);
     this.onClose = this.onClose.bind(this);
+    this._onDateChange = this._onDateChange.bind(this);
+    this._onTimeChange = this._onTimeChange.bind(this);
+    this._onPriceChange = this._onPriceChange.bind(this);
+    this._onFavoriteChange = this._onFavoriteChange.bind(this);
 
   }
 
@@ -64,7 +72,13 @@ class TripPointEdit extends Component {
           <header class="point__header">
             <label class="point__date" style="display: block">
               choose day
-              <input class="point__input" type="text" placeholder="MAR 18" name="day">
+              <input 
+                class="point__input" 
+                type="text" 
+                placeholder="MAR 18"
+                name="day"
+                value="${this._state.date ? moment(this._state.date).format(`MMM D`) : ``}"
+              >
             </label>
       
             <div class="travel-way">
@@ -152,13 +166,24 @@ class TripPointEdit extends Component {
       
             <label class="point__time">
               choose time
-              <input class="point__input" type="text" value="00:00 — 00:00" name="time" placeholder="00:00 — 00:00">
+              <input 
+                class="point__input" 
+                type="text" 
+                placeholder="00:00 — 00:00"
+                value="${this._state.time ? moment(this._state.time).format(`H mm`) : ``}"
+                name="time" 
+              >
             </label>
       
             <label class="point__price">
               write price
               <span class="point__price-currency">€</span>
-              <input class="point__input" type="text" value="160" name="price">
+              <input 
+                class="point__input" 
+                type="text" 
+                value="${this._state.price ? this._state.price : ``}" 
+                name="price"
+              >
             </label>
       
             <div class="point__buttons">
@@ -167,7 +192,13 @@ class TripPointEdit extends Component {
             </div>
       
             <div class="paint__favorite-wrap">
-              <input type="checkbox" class="point__favorite-input visually-hidden" id="favorite" name="favorite">
+              <input 
+                type="checkbox" 
+                class="point__favorite-input visually-hidden" 
+                id="favorite" 
+                name="favorite"
+                ${this._state.isFavorite && `checked`}
+              >
               <label class="point__favorite" for="favorite">favorite</label>
             </div>
           </header>
@@ -254,6 +285,26 @@ class TripPointEdit extends Component {
     this._state.city = ev.target.value;
   }
 
+  _onDateChange(ev) {
+    ev.preventDefault();
+    this._state.date = this.calendar.selectedDates[0].valueOf();
+  }
+
+  _onTimeChange(ev) {
+    ev.preventDefault();
+    this._state.time = this.timePicker.selectedDates[0].valueOf();
+  }
+
+  _onPriceChange(ev) {
+    ev.preventDefault();
+    this._state.price = ev.target.value;
+  }
+
+  _onFavoriteChange(ev) {
+    ev.preventDefault();
+    this._state.isFavorite = ev.target.checked;
+  }
+
   bind() {
     if (this.onSave) {
       this._element.querySelector(`.point__form`)
@@ -269,6 +320,10 @@ class TripPointEdit extends Component {
     this._element.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onDestinationChange);
 
+    this._element.querySelector(`.point__date .point__input`)
+      .addEventListener(`input`, this._onDateChange);
+    this._element.querySelector(`.point__time .point__input`)
+      .addEventListener(`input`, this._onTimeChange);
     this.calendar = flatpickr(
         this._element.querySelector(`.point__date .point__input`),
         {
@@ -282,6 +337,12 @@ class TripPointEdit extends Component {
           noCalendar: true,
           dateFormat: `H:i`,
         });
+
+    this._element.querySelector(`.point__price .point__input`)
+      .addEventListener(`input`, this._onPriceChange);
+    this._element.querySelector(`.point__favorite-input`)
+      .addEventListener(`change`, this._onFavoriteChange);
+
   }
 
   unbind() {

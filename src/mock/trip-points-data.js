@@ -38,7 +38,7 @@ function generateTripPoint() {
     city: DATA.cities[DATA.cities.length * Math.random() << 0],
     timetable: `22:00&nbsp;&mdash; 07:00`,
     duration: `2h 40m`,
-    price: `&euro;&nbsp;20`,
+    price: `20`,
     offers: utils.getRandomElementsFromArray([...DATA.offers], utils.getRandomInt(2)),
     get icon() {
       return DATA.tripTypes[this.tripType];
