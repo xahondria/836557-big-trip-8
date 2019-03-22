@@ -13,6 +13,18 @@ class Component {
     throw new Error(`You have to define template.`);
   }
 
+  getElement() {
+    return this._element;
+  }
+
+  getState() {
+    return Object.assign({}, this._state);
+  }
+
+  setState(newState) {
+    this._state = newState;
+  }
+
   bind() {
   }
 
@@ -26,7 +38,6 @@ class Component {
     const newElement = this.render();
     element.replaceWith(newElement);
     newElement._currentComponent = this;
-    newElement._currentComponent._currentHTMLElement = newElement;
   }
 
   createElement(template) {
@@ -38,7 +49,6 @@ class Component {
   render() {
     this._element = this.createElement(this.template);
     this._element._currentComponent = this;
-    this._element._currentComponent._currentHTMLElement = this._element;
     this.bind();
     return this._element;
   }

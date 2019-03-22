@@ -264,7 +264,7 @@ class TripPointEdit extends Component {
   createTripPointEditMapper() {
   }
 
-  _destroyFlatpickr() {
+  destroyFlatpickr() {
     if (this.calendar) {
       this.calendar.destroy();
     }

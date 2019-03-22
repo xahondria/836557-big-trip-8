@@ -20,11 +20,10 @@ const tripPointOptions = () => {
     onEdit(ev) {
       ev.preventDefault();
       const element = ev.currentTarget;
-      const newElementState = Object.assign({}, this._state);
 
       this.unbind();
       const tripPointEditElement = new TripPointEdit(
-          newElementState,
+          this.getState(),
           tripPointEditOptions(this))
         .render();
       element.replaceWith(tripPointEditElement);
@@ -37,19 +36,24 @@ const tripPointEditOptions = (tripPoint) => {
     onSave(ev, tripPointEdit) {
       const element = ev.currentTarget.closest(`.point`);
       ev.preventDefault();
-      tripPointEdit._destroyFlatpickr();
-      tripPoint._state = Object.assign({}, tripPointEdit._state);
+      tripPointEdit.destroyFlatpickr();
+      tripPoint.setState(tripPointEdit.getState());
       tripPoint.updateComponent(element);
     },
     onClose(ev) {
       if (ev.key === `Escape`) {
         ev.preventDefault();
-        this._destroyFlatpickr();
-        tripPoint.updateComponent(this._currentHTMLElement);
+        this.destroyFlatpickr();
+        tripPoint.updateComponent(this.getElement());
       }
     },
   };
 };
+
+// TODO допилить кнопки
+// TODO убрать лишний инпут даты
+// TODO добавить flatpickr range
+
 
 utils.defineCurrentlyRenderedObjects(
     TRIP_POINTS_DATA,
