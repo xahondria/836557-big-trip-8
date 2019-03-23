@@ -48,7 +48,6 @@ class TripPointEdit extends Component {
       isFavorite: data.isFavorite,
       offers: data.offers,
     };
-    console.log(this._state.duration);
 
     this.timePicker = null;
 
@@ -269,12 +268,8 @@ class TripPointEdit extends Component {
       this._state.startTime = selectedDates[0].valueOf();
       this._state.duration = selectedDates[1].valueOf() - this._state.startTime;
       this._state.timetable = `
-        ${moment(this._state.startTime).format(`H mm`)} &mdash; ${moment(this._state.startTime + this._state.duration).format(`H mm`)}
+        ${moment(this._state.startTime).format(`HH mm`)} &mdash; ${moment(this._state.startTime + this._state.duration).format(`HH mm`)}
       `.trim();
-
-      console.log(this._state.duration);
-      console.log(moment(this._state.startTime).format(`H mm`));
-      console.log(moment(3600000).format(`H mm`));
     }
   }
 

@@ -66,7 +66,7 @@ function generateTripPoint() {
     city: DATA.cities[DATA.cities.length * Math.random() << 0],
     get timetable() {
       return `
-        ${moment(this.startTime).format(`H mm`)} &mdash; ${moment(this.startTime + this.duration).format(`H mm`)}
+        ${moment(this.startTime).format(`HH mm`)} &mdash; ${moment(this.startTime + this.duration).format(`HH mm`)}
       `.trim();
     },
     startTime: Date.now() + utils.getRandomInt(DATA.HOUR_DISPERSION) * DATA.HOUR_TO_MS_RATE,
