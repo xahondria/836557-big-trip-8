@@ -51,8 +51,6 @@ const tripPointEditOptions = (tripPoint) => {
 };
 
 // TODO допилить кнопки
-// TODO убрать лишний инпут даты
-// TODO добавить flatpickr range
 
 
 utils.defineCurrentlyRenderedObjects(

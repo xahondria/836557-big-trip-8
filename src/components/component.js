@@ -18,7 +18,7 @@ class Component {
   }
 
   getState() {
-    return Object.assign({}, this._state);
+    return JSON.parse(JSON.stringify((this._state)));
   }
 
   setState(newState) {
@@ -54,7 +54,9 @@ class Component {
   }
 
   unrender() {
-    //  TODO написать unrender
+    this.unbind();
+    this._element.remove();
+    this._element = null;
   }
 
 }

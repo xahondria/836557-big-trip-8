@@ -43,7 +43,7 @@ class TripPointEdit extends Component {
       timetable: data.timetable,
       startTime: data.startTime,
       duration: data.duration,
-      price: data.price,
+      price: parseInt(data.price, 10),
       isFavorite: data.isFavorite,
       offers: data.offers,
     };
@@ -56,6 +56,8 @@ class TripPointEdit extends Component {
     this._onTripTypeChange = this._onTripTypeChange.bind(this);
     this._onDestinationChange = this._onDestinationChange.bind(this);
     this.onClose = this.onClose.bind(this);
+    this._onDelete = this._onDelete.bind(this);
+    this._onChangeOffers = this._onChangeOffers.bind(this);
     this._onTimeChange = this._onTimeChange.bind(this);
     this._onPriceChange = this._onPriceChange.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
@@ -184,7 +186,7 @@ class TripPointEdit extends Component {
       
             <div class="point__buttons">
               <button class="point__button point__button--save" type="submit">Save</button>
-              <button class="point__button" type="reset">Delete</button>
+              <button class="point__button point__button--delete" type="reset">Delete</button>
             </div>
       
             <div class="paint__favorite-wrap">
@@ -204,22 +206,50 @@ class TripPointEdit extends Component {
               <h3 class="point__details-title">offers</h3>
       
               <div class="point__offers-wrap">
-                <input class="point__offers-input visually-hidden" type="checkbox" id="add-luggage" name="offer" value="add-luggage">
+                <input 
+                  class="point__offers-input visually-hidden" 
+                  type="checkbox" 
+                  id="add-luggage" 
+                  name="offer" 
+                  value="add-luggage"
+                  ${this._state.offers[`add-luggage`].isChecked && `checked`}
+                >
                 <label for="add-luggage" class="point__offers-label">
                   <span class="point__offer-service">Add luggage</span> + €<span class="point__offer-price">30</span>
                 </label>
       
-                <input class="point__offers-input visually-hidden" type="checkbox" id="switch-to-comfort-class" name="offer" value="switch-to-comfort-class">
+                <input 
+                  class="point__offers-input visually-hidden" 
+                  type="checkbox" 
+                  id="switch-to-comfort-class" 
+                  name="offer" 
+                  value="switch-to-comfort-class"
+                  ${this._state.offers[`switch-to-comfort-class`].isChecked && `checked`}
+                >
                 <label for="switch-to-comfort-class" class="point__offers-label">
                   <span class="point__offer-service">Switch to comfort class</span> + €<span class="point__offer-price">100</span>
                 </label>
       
-                <input class="point__offers-input visually-hidden" type="checkbox" id="add-meal" name="offer" value="add-meal">
+                <input 
+                  class="point__offers-input visually-hidden" 
+                  type="checkbox" 
+                  id="add-meal" 
+                  name="offer" 
+                  value="add-meal"
+                  ${this._state.offers[`add-meal`].isChecked && `checked`}
+                >
                 <label for="add-meal" class="point__offers-label">
                   <span class="point__offer-service">Add meal </span> + €<span class="point__offer-price">15</span>
                 </label>
       
-                <input class="point__offers-input visually-hidden" type="checkbox" id="choose-seats" name="offer" value="choose-seats">
+                <input 
+                  class="point__offers-input visually-hidden" 
+                  type="checkbox" 
+                  id="choose-seats" 
+                  name="offer" 
+                  value="choose-seats"
+                  ${this._state.offers[`choose-seats`].isChecked && `checked`}
+                >
                 <label for="choose-seats" class="point__offers-label">
                   <span class="point__offer-service">Choose seats</span> + €<span class="point__offer-price">5</span>
                 </label>
@@ -278,11 +308,14 @@ class TripPointEdit extends Component {
     this._state.city = ev.target.value;
   }
 
-  _onTimeChange(ev) {
-    ev.preventDefault();
-    this._state.startTime = this.timePicker.selectedDates[0].valueOf();
-    this._state.duration = this.timePicker.selectedDates[1].valueOf() - this._state.startTime;
-    this._state.timetable = moment(this._state.startTime).format(`H mm`) + ` &mdash; ` + moment(this._state.startTime + this._state.duration).format(`H mm`);
+  _onTimeChange(selectedDates) {
+    if (selectedDates.length === 2) {
+      this._state.startTime = selectedDates[0].valueOf();
+      this._state.duration = selectedDates[1].valueOf() - this._state.startTime;
+      this._state.timetable = `
+        ${moment(this._state.startTime).format(`H mm`)} &mdash; ${moment(this._state.startTime + this._state.duration).format(`H mm`)}
+      `.trim();
+    }
   }
 
   _onPriceChange(ev) {
@@ -290,9 +323,23 @@ class TripPointEdit extends Component {
     this._state.price = ev.target.value;
   }
 
+  _onDelete(ev) {
+    ev.preventDefault();
+    this.unrender();
+  }
+
   _onFavoriteChange(ev) {
     ev.preventDefault();
     this._state.isFavorite = ev.target.checked;
+  }
+
+  _onChangeOffers(ev) {
+    ev.preventDefault();
+    this._state.offers[ev.target.value].isChecked = ev.target.checked;
+    this._state.price = this._state.offers[ev.target.value].isChecked
+      ? this._state.price + parseInt(this._state.offers[ev.target.value].price, 10)
+      : this._state.price - parseInt(this._state.offers[ev.target.value].price, 10);
+    this.updateComponent(this._element);
   }
 
   bind() {
@@ -305,13 +352,15 @@ class TripPointEdit extends Component {
       document.addEventListener(`keydown`, this.onClose);
     }
 
+    if (this._onDelete) {
+      this._element.querySelector(`.point__button--delete`)
+        .addEventListener(`click`, this._onDelete);
+    }
+
     this._element.querySelector(`.travel-way__select`)
       .addEventListener(`change`, this._onTripTypeChange);
     this._element.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onDestinationChange);
-
-    this._element.querySelector(`.point__time .point__input`)
-      .addEventListener(`input`, this._onTimeChange);
 
     this.timePicker = flatpickr(
         this._element.querySelector(`.point__time .point__input`),
@@ -321,6 +370,9 @@ class TripPointEdit extends Component {
           mode: `range`,
           locale: {
             rangeSeparator: ` — `
+          },
+          onClose: (selectedDates) => {
+            this._onTimeChange(selectedDates);
           }
         });
 
@@ -328,6 +380,8 @@ class TripPointEdit extends Component {
       .addEventListener(`input`, this._onPriceChange);
     this._element.querySelector(`.point__favorite-input`)
       .addEventListener(`change`, this._onFavoriteChange);
+    this._element.querySelector(`.point__offers-wrap`)
+      .addEventListener(`change`, this._onChangeOffers);
 
   }
 
