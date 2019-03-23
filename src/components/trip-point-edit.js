@@ -48,6 +48,7 @@ class TripPointEdit extends Component {
       isFavorite: data.isFavorite,
       offers: data.offers,
     };
+    console.log(this._state.duration);
 
     this.timePicker = null;
 
@@ -270,6 +271,10 @@ class TripPointEdit extends Component {
       this._state.timetable = `
         ${moment(this._state.startTime).format(`H mm`)} &mdash; ${moment(this._state.startTime + this._state.duration).format(`H mm`)}
       `.trim();
+
+      console.log(this._state.duration);
+      console.log(moment(this._state.startTime).format(`H mm`));
+      console.log(moment(3600000).format(`H mm`));
     }
   }
 

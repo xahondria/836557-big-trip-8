@@ -1,6 +1,9 @@
 import utils from "../utils";
+import moment from "moment";
 
 const DATA = {
+  HOUR_TO_MS_RATE: 3600000,
+  HOUR_DISPERSION: 5,
   tripTypes: {
     'taxi': `🚕`,
     'bus': `🚌`,
@@ -61,8 +64,13 @@ function generateTripPoint() {
   return {
     tripType: utils.getRandomKeyFromObject(DATA.tripTypes),
     city: DATA.cities[DATA.cities.length * Math.random() << 0],
-    timetable: `22:00&nbsp;&mdash; 07:00`,
-    duration: `2h 40m`,
+    get timetable() {
+      return `
+        ${moment(this.startTime).format(`H mm`)} &mdash; ${moment(this.startTime + this.duration).format(`H mm`)}
+      `.trim();
+    },
+    startTime: Date.now() + utils.getRandomInt(DATA.HOUR_DISPERSION) * DATA.HOUR_TO_MS_RATE,
+    duration: 800000 + utils.getRandomInt(8000000),
     price: `20`,
     offers: getOffers(),
     get icon() {
