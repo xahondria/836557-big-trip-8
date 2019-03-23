@@ -1,12 +1,7 @@
 import Component from "./component";
-import utils from "../utils";
-import TRIP_POINTS_DATA from "../mock/trip-points-data";
-import TripPoint from "./trip-point";
-
-// TODO при смене фильтра ломаются обработчики событий на tripPoint
 
 class Filter extends Component {
-  constructor(data) {
+  constructor(data, options = {}) {
     super();
     this._state = {
       id: data.id,
@@ -16,7 +11,8 @@ class Filter extends Component {
       labelText: data.labelText,
     };
 
-    this._onChange = this._onChange.bind(this);
+    this.onChange = typeof options.onChange === `function` ? options.onChange : null;
+    this.onChange = this.onChange.bind(this);
   }
 
   get template() {
@@ -49,26 +45,9 @@ class Filter extends Component {
     return this._fragment;
   }
 
-  _onChange(ev) {
-    ev.preventDefault();
-    let filteredData = null;
-    if (ev.target.value === `everything`) {
-      filteredData = TRIP_POINTS_DATA;
-    } else {
-      filteredData = utils.getRandomElementsFromArray(TRIP_POINTS_DATA, utils.getRandomInt(4));
-    }
-
-    utils.renderComponent(
-        document.querySelector(`.trip-day__items`),
-        filteredData,
-        TripPoint,
-        `tripPoints`);
-
-  }
-
   bind() {
     document.querySelector(`.trip-filter`)
-      .addEventListener(`change`, this._onChange);
+      .addEventListener(`change`, this.onChange);
   }
 }
 
