@@ -40,16 +40,14 @@ class TripPointEdit extends Component {
       icon: data.icon,
       tripType: data.tripType,
       city: data.city,
-      date: data.date,
-      time: data.time,
       timetable: data.timetable,
+      startTime: data.startTime,
       duration: data.duration,
       price: data.price,
       isFavorite: data.isFavorite,
       offers: data.offers,
     };
 
-    this.calendar = null;
     this.timePicker = null;
 
     this.onSave = typeof options.onSave === `function` ? options.onSave : null;
@@ -58,7 +56,6 @@ class TripPointEdit extends Component {
     this._onTripTypeChange = this._onTripTypeChange.bind(this);
     this._onDestinationChange = this._onDestinationChange.bind(this);
     this.onClose = this.onClose.bind(this);
-    this._onDateChange = this._onDateChange.bind(this);
     this._onTimeChange = this._onTimeChange.bind(this);
     this._onPriceChange = this._onPriceChange.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
@@ -70,14 +67,13 @@ class TripPointEdit extends Component {
       <article class="point">
         <form class="point__form" action="" method="get">
           <header class="point__header">
-            <label class="point__date" style="display: block">
+            <label class="point__date">
               choose day
               <input 
                 class="point__input" 
                 type="text" 
                 placeholder="MAR 18"
                 name="day"
-                value="${this._state.date ? moment(this._state.date).format(`MMM D`) : ``}"
               >
             </label>
       
@@ -170,7 +166,7 @@ class TripPointEdit extends Component {
                 class="point__input" 
                 type="text" 
                 placeholder="00:00 — 00:00"
-                value="${this._state.time ? moment(this._state.time).format(`H mm`) : ``}"
+                value="${this._state.startTime > 0 ? this._state.timetable : ``}" 
                 name="time" 
               >
             </label>
@@ -265,9 +261,6 @@ class TripPointEdit extends Component {
   }
 
   destroyFlatpickr() {
-    if (this.calendar) {
-      this.calendar.destroy();
-    }
     if (this.timePicker) {
       this.timePicker.destroy();
     }
@@ -285,14 +278,11 @@ class TripPointEdit extends Component {
     this._state.city = ev.target.value;
   }
 
-  _onDateChange(ev) {
-    ev.preventDefault();
-    this._state.date = this.calendar.selectedDates[0].valueOf();
-  }
-
   _onTimeChange(ev) {
     ev.preventDefault();
-    this._state.time = this.timePicker.selectedDates[0].valueOf();
+    this._state.startTime = this.timePicker.selectedDates[0].valueOf();
+    this._state.duration = this.timePicker.selectedDates[1].valueOf() - this._state.startTime;
+    this._state.timetable = moment(this._state.startTime).format(`H mm`) + ` &mdash; ` + moment(this._state.startTime + this._state.duration).format(`H mm`);
   }
 
   _onPriceChange(ev) {
@@ -320,22 +310,18 @@ class TripPointEdit extends Component {
     this._element.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onDestinationChange);
 
-    this._element.querySelector(`.point__date .point__input`)
-      .addEventListener(`input`, this._onDateChange);
     this._element.querySelector(`.point__time .point__input`)
       .addEventListener(`input`, this._onTimeChange);
-    this.calendar = flatpickr(
-        this._element.querySelector(`.point__date .point__input`),
-        {
-          dateFormat: `M j`,
-        });
 
     this.timePicker = flatpickr(
         this._element.querySelector(`.point__time .point__input`),
         {
           enableTime: true,
-          noCalendar: true,
           dateFormat: `H:i`,
+          mode: `range`,
+          locale: {
+            rangeSeparator: ` — `
+          }
         });
 
     this._element.querySelector(`.point__price .point__input`)

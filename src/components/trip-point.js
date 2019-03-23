@@ -1,5 +1,6 @@
 import Component from "./component";
 import tripPointOffers from "./trip-point-offers";
+import moment from "moment";
 
 class TripPoint extends Component {
   /**
@@ -13,9 +14,8 @@ class TripPoint extends Component {
       icon: data.icon,
       tripType: data.tripType,
       city: data.city,
-      date: data.date,
-      time: data.time,
       timetable: data.timetable,
+      startTime: data.startTime,
       duration: data.duration,
       price: data.price,
       isFavorite: data.isFavorite,
@@ -32,8 +32,8 @@ class TripPoint extends Component {
         <i class="trip-icon">${this._state.icon}</i>
         <h3 class="trip-point__title">${this._state.tripType} to ${this._state.city}</h3>
         <p class="trip-point__schedule">
-          <span class="trip-point__timetable">${this._state.timetable}</span>
-          <span class="trip-point__duration">${this._state.duration}</span>
+          <span class="trip-point__timetable">${this._state.startTime > 0 ? this._state.timetable : ``}</span>
+          <span class="trip-point__duration">${this._state.duration > 0 ? moment(this._state.duration).format(`H mm`) : ``}</span>
         </p>
         <p class="trip-point__price">&euro;&nbsp;${this._state.price}</p>
         <ul class="trip-point__offers">
