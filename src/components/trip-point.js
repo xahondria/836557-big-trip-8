@@ -21,6 +21,7 @@ class TripPoint extends Component {
       isFavorite: data.isFavorite,
       offers: data.offers,
     };
+
     this.onEdit = typeof options.onEdit === `function` ? options.onEdit : null;
     this.onEdit = this.onEdit.bind(this);
 

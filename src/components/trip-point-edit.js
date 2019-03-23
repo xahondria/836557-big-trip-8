@@ -2,6 +2,7 @@ import flatpickr from "flatpickr";
 import Component from "./component";
 import tripPointEditDestinations from "./trip-point-edit-destinations";
 import moment from "moment";
+import tripPointEditOffers from "./trip-point-edit-offers";
 
 class TripPointEdit extends Component {
   /**
@@ -206,53 +207,7 @@ class TripPointEdit extends Component {
               <h3 class="point__details-title">offers</h3>
       
               <div class="point__offers-wrap">
-                <input 
-                  class="point__offers-input visually-hidden" 
-                  type="checkbox" 
-                  id="add-luggage" 
-                  name="offer" 
-                  value="add-luggage"
-                  ${this._state.offers[`add-luggage`].isChecked && `checked`}
-                >
-                <label for="add-luggage" class="point__offers-label">
-                  <span class="point__offer-service">Add luggage</span> + €<span class="point__offer-price">30</span>
-                </label>
-      
-                <input 
-                  class="point__offers-input visually-hidden" 
-                  type="checkbox" 
-                  id="switch-to-comfort-class" 
-                  name="offer" 
-                  value="switch-to-comfort-class"
-                  ${this._state.offers[`switch-to-comfort-class`].isChecked && `checked`}
-                >
-                <label for="switch-to-comfort-class" class="point__offers-label">
-                  <span class="point__offer-service">Switch to comfort class</span> + €<span class="point__offer-price">100</span>
-                </label>
-      
-                <input 
-                  class="point__offers-input visually-hidden" 
-                  type="checkbox" 
-                  id="add-meal" 
-                  name="offer" 
-                  value="add-meal"
-                  ${this._state.offers[`add-meal`].isChecked && `checked`}
-                >
-                <label for="add-meal" class="point__offers-label">
-                  <span class="point__offer-service">Add meal </span> + €<span class="point__offer-price">15</span>
-                </label>
-      
-                <input 
-                  class="point__offers-input visually-hidden" 
-                  type="checkbox" 
-                  id="choose-seats" 
-                  name="offer" 
-                  value="choose-seats"
-                  ${this._state.offers[`choose-seats`].isChecked && `checked`}
-                >
-                <label for="choose-seats" class="point__offers-label">
-                  <span class="point__offer-service">Choose seats</span> + €<span class="point__offer-price">5</span>
-                </label>
+                ${tripPointEditOffers(this._state.offers)}
               </div>
       
             </section>
@@ -336,10 +291,6 @@ class TripPointEdit extends Component {
   _onChangeOffers(ev) {
     ev.preventDefault();
     this._state.offers[ev.target.value].isChecked = ev.target.checked;
-    this._state.price = this._state.offers[ev.target.value].isChecked
-      ? this._state.price + parseInt(this._state.offers[ev.target.value].price, 10)
-      : this._state.price - parseInt(this._state.offers[ev.target.value].price, 10);
-    this.updateComponent(this._element);
   }
 
   bind() {
