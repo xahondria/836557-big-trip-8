@@ -10,6 +10,7 @@ class TripPointEdit extends Component {
    * @param {Object} options - options of TripPointEdit
    * @param {Function} options.onSave - event handler that will be bind for onSubmit event, second argument is a reference to current TripPointEdit
    * @param {Function} options.onClose - event handler that will be bind for keydown "Escape" event, second argument is a reference to current TripPointEdit
+   * @param {Function} options.onDelete
    */
   constructor(data, options = {}) {
     super();
@@ -53,11 +54,12 @@ class TripPointEdit extends Component {
 
     this.onSave = typeof options.onSave === `function` ? options.onSave : null;
     this.onClose = typeof options.onClose === `function` ? options.onClose : null;
+    this.onDelete = typeof options.onDelete === `function` ? options.onDelete : null;
 
     this._onTripTypeChange = this._onTripTypeChange.bind(this);
     this._onDestinationChange = this._onDestinationChange.bind(this);
     this.onClose = this.onClose.bind(this);
-    this._onDelete = this._onDelete.bind(this);
+    this.onDelete = this.onDelete.bind(this);
     this._onChangeOffers = this._onChangeOffers.bind(this);
     this._onTimeChange = this._onTimeChange.bind(this);
     this._onPriceChange = this._onPriceChange.bind(this);
@@ -278,11 +280,6 @@ class TripPointEdit extends Component {
     this._state.price = ev.target.value;
   }
 
-  _onDelete(ev) {
-    ev.preventDefault();
-    this.unrender();
-  }
-
   _onFavoriteChange(ev) {
     ev.preventDefault();
     this._state.isFavorite = ev.target.checked;
@@ -303,9 +300,9 @@ class TripPointEdit extends Component {
       document.addEventListener(`keydown`, this.onClose);
     }
 
-    if (this._onDelete) {
+    if (this.onDelete) {
       this._element.querySelector(`.point__button--delete`)
-        .addEventListener(`click`, this._onDelete);
+        .addEventListener(`click`, this.onDelete);
     }
 
     this._element.querySelector(`.travel-way__select`)

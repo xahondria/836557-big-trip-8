@@ -8,6 +8,7 @@ class TripPoint extends Component {
    * @param {Object} data - input data for component
    * @param {Object} options - options of TripPoint
    * @param {Function} options.onEdit - event handler that will be bind for event, second argument is a reference to current TripPoint
+   * @param {Function} options.renderDays - renders day container for tripPoints
    */
   constructor(data, options = {}) {
     super();

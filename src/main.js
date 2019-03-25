@@ -25,7 +25,7 @@ const filterOptions = () => {
 
       container.innerHTML = ``;
       utils.renderElements(container, filteredData.map((el) => el.render()));
-    }
+    },
   };
 };
 
@@ -80,6 +80,11 @@ const tripPointEditOptions = (tripPoint) => {
         tripPoint.updateComponent(this.getElement());
       }
     },
+    onDelete(ev) {
+      ev.preventDefault();
+      this.unrender();
+    },
+
   };
 };
 
@@ -89,51 +94,51 @@ utils.defineCurrentlyRenderedObjects(
     tripPointOptions(),
     `tripPoints`);
 
+currentlyRenderedObjects.tripPoints.forEach((tripPoint) => {
+
+  /*
+  tripDays
+  */
+
+  const tripPointDate = moment(tripPoint._state.startTime).format(`YYYY, MM, DD`);
+
+  if (currentlyRenderedObjects.uniqueDays.has(tripPointDate)) {
+    return;
+  }
+  currentlyRenderedObjects.uniqueDays.add(tripPointDate);
+
+  const tripDayOptions = () => {
+    return {
+      onSortByTime() {
+        this.eventsToday = currentlyRenderedObjects.tripPoints.filter((el) => moment(el._state.startTime).format(`YYYY, MM, DD`) === this.date);
+
+        utils.renderComponent(
+            this._element.querySelector(`.trip-day__items`),
+            this.eventsToday);
+      },
+    };
+  };
+
+  utils.defineCurrentlyRenderedObjects(
+      [...currentlyRenderedObjects.uniqueDays],
+      TripDay,
+      tripDayOptions(),
+      `tripDays`);
+
+  utils.renderComponent(
+      document.querySelector(`.trip-points`),
+      currentlyRenderedObjects.tripDays);
+
+  /*
+    tripDays END
+    */
+
+});
+
 /*
 tripPoints END
 */
 
-
-/*
-tripDays
-*/
-
-const DATA_SORTED_BY_TIME = JSON.parse(JSON.stringify((TRIP_POINTS_DATA)));
-
-DATA_SORTED_BY_TIME.sort((left, right) => {
-  return left.startTime - right.startTime;
-});
-
-const uniqueDays = new Set(DATA_SORTED_BY_TIME.map((el, index) => {
-  DATA_SORTED_BY_TIME[index].date = moment(el.startTime).format(`YYYY, MM, DD`);
-  return moment(el.startTime).format(`YYYY, MM, DD`);
-}));
-
-const tripDayOptions = () => {
-  return {
-    onSortByTime() {
-      const eventsToday = currentlyRenderedObjects.tripPoints.filter((el) => moment(el._state.startTime).format(`YYYY, MM, DD`) === this.date);
-
-      utils.renderComponent(
-          this._element.querySelector(`.trip-day__items`),
-          eventsToday);
-    }
-  };
-};
-
-utils.defineCurrentlyRenderedObjects(
-    [...uniqueDays],
-    TripDay,
-    tripDayOptions(),
-    `tripDays`);
-
-utils.renderComponent(
-    document.querySelector(`.trip-points`),
-    currentlyRenderedObjects.tripDays);
-
-/*
-tripDays END
-*/
 
 // TODO сделать new event
 // TODO сделать сбор данных по _getFormData

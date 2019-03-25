@@ -26,6 +26,7 @@ class TripDay extends Component {
   }
 
   bind() {
+
     this.onSortByTime();
     if (this.onSortByTime) {
       document.querySelector(`.trip-sorting__item--time`).addEventListener(`click`, this.onSortByTime);
