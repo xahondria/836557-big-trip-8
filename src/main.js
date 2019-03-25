@@ -8,6 +8,9 @@ import TripPointEdit from "./components/trip-point-edit";
 import currentlyRenderedObjects from "./currently-rendered-objects";
 import moment from "moment";
 
+window._options = {
+  sort: `asc`,
+};
 
 /*
 FILTERS
@@ -66,12 +69,13 @@ const tripPointOptions = () => {
 
 const tripPointEditOptions = (tripPoint) => {
   return {
-    onSave(ev, tripPointEdit) {
+    onSave(ev) {
       const element = ev.currentTarget.closest(`.point`);
       ev.preventDefault();
-      tripPointEdit.destroyFlatpickr();
-      tripPoint.setState(tripPointEdit.getState());
+      this.destroyFlatpickr();
+      tripPoint.setState(this.getState());
       tripPoint.updateComponent(element);
+      rerenderList();
     },
     onClose(ev) {
       if (ev.key === `Escape`) {
@@ -83,9 +87,61 @@ const tripPointEditOptions = (tripPoint) => {
     onDelete(ev) {
       ev.preventDefault();
       this.unrender();
+      currentlyRenderedObjects.tripPoints = currentlyRenderedObjects.tripPoints.filter((tp) => tp !== tripPoint);
+      rerenderList();
     },
 
   };
+};
+
+function updateSortTripPoints(array, asc = true) {
+
+  array.sort((left, right) => asc
+    ? left._state.startTime - right._state.startTime
+    : right._state.startTime - left._state.startTime);
+}
+
+const rerenderList = () => {
+  updateSortTripPoints(currentlyRenderedObjects.tripPoints, window._options.sort === `asc`);
+
+  // Группировка
+  const groups = currentlyRenderedObjects.tripPoints.reduce((memo, current) => {
+    const tripPointDate = moment(current._state.startTime).startOf(`day`).toDate();
+    if (!memo.length) {
+      memo.push({
+        key: tripPointDate,
+        values: [],
+      });
+    }
+    const prevGroup = memo[memo.length - 1];
+
+    if (prevGroup.key.getTime() === tripPointDate.getTime()) {
+      prevGroup.values.push(current);
+    } else {
+      memo.push({
+        key: tripPointDate,
+        values: [current],
+      });
+    }
+    return memo;
+  }, []);
+  // Конец группировки
+
+  // Очистка предыдущих event
+  if (currentlyRenderedObjects.tripDays) {
+    currentlyRenderedObjects.tripDays.forEach((td) => td.unbind());
+  }
+
+  // Рендеринг компонентов
+  currentlyRenderedObjects.tripDays = groups.map((group) => {
+    return new TripDay({
+      date: group.key,
+      tripPoints: group.values,
+    }, {});
+  });
+  utils.renderComponent(
+      document.querySelector(`.trip-points`),
+      currentlyRenderedObjects.tripDays);
 };
 
 utils.defineCurrentlyRenderedObjects(
@@ -94,58 +150,17 @@ utils.defineCurrentlyRenderedObjects(
     tripPointOptions(),
     `tripPoints`);
 
-currentlyRenderedObjects.tripPoints.forEach((tripPoint) => {
-
-  /*
-  tripDays
-  */
-
-  const tripPointDate = moment(tripPoint._state.startTime).format(`YYYY, MM, DD`);
-
-  if (currentlyRenderedObjects.uniqueDays.has(tripPointDate)) {
-    return;
-  }
-  currentlyRenderedObjects.uniqueDays.add(tripPointDate);
-
-  const tripDayOptions = () => {
-    return {
-      onSortByTime() {
-        this.eventsToday = currentlyRenderedObjects.tripPoints.filter((el) => moment(el._state.startTime).format(`YYYY, MM, DD`) === this.date);
-
-        utils.renderComponent(
-            this._element.querySelector(`.trip-day__items`),
-            this.eventsToday);
-      },
-    };
-  };
-
-  utils.defineCurrentlyRenderedObjects(
-      [...currentlyRenderedObjects.uniqueDays],
-      TripDay,
-      tripDayOptions(),
-      `tripDays`);
-
-  utils.renderComponent(
-      document.querySelector(`.trip-points`),
-      currentlyRenderedObjects.tripDays);
-
-  /*
-    tripDays END
-    */
-
-});
-
-/*
-tripPoints END
-*/
+rerenderList();
 
 
 // TODO сделать new event
 // TODO сделать сбор данных по _getFormData
 // TODO сделать статистику
 // TODO сделать сортировки
+document.querySelector(`#sorting-time`).addEventListener(`click`, function () {
+  const asc = window._options.sort === `asc`;
+  window._options.sort = asc ? `desc` : `asc`;
+  rerenderList();
+});
 // TODO менять total в правом верхнем углу
 // TODO менять описание поездки и даты в хедере
-
-// TODO менять дату в левой колонке
-

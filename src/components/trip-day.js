@@ -1,14 +1,12 @@
 import Component from "./component";
+import utils from '../utils';
 import moment from "moment";
 
 class TripDay extends Component {
-  constructor(data, options = {}) {
+  constructor(data, _options = {}) {
     super();
-    this.date = data;
-
-    this.onSortByTime = typeof options.onSortByTime === `function` ? options.onSortByTime : null;
-    this.onSortByTime = this.onSortByTime.bind(this);
-
+    this.date = data.date;
+    this.tripPoints = data.tripPoints;
   }
 
   get template() {
@@ -25,16 +23,14 @@ class TripDay extends Component {
     `.trim();
   }
 
-  bind() {
+  render() {
+    super.render();
 
-    this.onSortByTime();
-    if (this.onSortByTime) {
-      document.querySelector(`.trip-sorting__item--time`).addEventListener(`click`, this.onSortByTime);
-    }
-  }
+    utils.renderComponent(
+        this._element.querySelector(`.trip-day__items`),
+        this.tripPoints);
 
-  unbind() {
-    document.removeEventListener(`.trip-sorting__item--time`).addEventListener(`click`, this.onSortByTime);
+    return this._element;
   }
 
 
