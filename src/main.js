@@ -1,10 +1,17 @@
 import Filter from "./components/filter";
 import TripPoint from "./components/trip-point";
+import TripDay from "./components/trip-day";
 import TRIP_POINTS_DATA from "./mock/trip-points-data";
 import utils from "./utils";
 import FILTERS_DATA from "./mock/filters-data";
 import TripPointEdit from "./components/trip-point-edit";
 import currentlyRenderedObjects from "./currently-rendered-objects";
+import moment from "moment";
+
+
+/*
+FILTERS
+*/
 
 const filterOptions = () => {
   return {
@@ -30,7 +37,16 @@ utils.defineCurrentlyRenderedObjects(
 
 utils.renderComponent(
     document.querySelector(`.trip-filter`),
-    `filters`);
+    currentlyRenderedObjects.filters);
+
+/*
+FILTERS END
+*/
+
+
+/*
+tripPoints
+*/
 
 const tripPointOptions = () => {
   return {
@@ -73,9 +89,51 @@ utils.defineCurrentlyRenderedObjects(
     tripPointOptions(),
     `tripPoints`);
 
+/*
+tripPoints END
+*/
+
+
+/*
+tripDays
+*/
+
+const DATA_SORTED_BY_TIME = JSON.parse(JSON.stringify((TRIP_POINTS_DATA)));
+
+DATA_SORTED_BY_TIME.sort((left, right) => {
+  return left.startTime - right.startTime;
+});
+
+const uniqueDays = new Set(DATA_SORTED_BY_TIME.map((el, index) => {
+  DATA_SORTED_BY_TIME[index].date = moment(el.startTime).format(`YYYY, MM, DD`);
+  return moment(el.startTime).format(`YYYY, MM, DD`);
+}));
+
+const tripDayOptions = () => {
+  return {
+    onSortByTime() {
+      const eventsToday = currentlyRenderedObjects.tripPoints.filter((el) => moment(el._state.startTime).format(`YYYY, MM, DD`) === this.date);
+
+      utils.renderComponent(
+          this._element.querySelector(`.trip-day__items`),
+          eventsToday);
+    }
+  };
+};
+
+utils.defineCurrentlyRenderedObjects(
+    [...uniqueDays],
+    TripDay,
+    tripDayOptions(),
+    `tripDays`);
+
 utils.renderComponent(
-    document.querySelector(`.trip-day__items`),
-    `tripPoints`);
+    document.querySelector(`.trip-points`),
+    currentlyRenderedObjects.tripDays);
+
+/*
+tripDays END
+*/
 
 // TODO сделать new event
 // TODO сделать сбор данных по _getFormData

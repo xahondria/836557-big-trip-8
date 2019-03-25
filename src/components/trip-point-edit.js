@@ -268,7 +268,7 @@ class TripPointEdit extends Component {
       this._state.startTime = selectedDates[0].valueOf();
       this._state.duration = selectedDates[1].valueOf() - this._state.startTime;
       this._state.timetable = `
-        ${moment(this._state.startTime).format(`HH mm`)} &mdash; ${moment(this._state.startTime + this._state.duration).format(`HH mm`)}
+        ${moment(this._state.startTime).format(`HH:mm`)} &mdash; ${moment(this._state.startTime + this._state.duration).format(`HH:mm`)}
       `.trim();
     }
   }
