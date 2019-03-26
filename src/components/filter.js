@@ -46,8 +46,7 @@ class Filter extends Component {
   }
 
   bind() {
-    // TODO переписать, чтобы обработчик не вешался 3 раза
-    document.querySelector(`.trip-filter`)
+    this._fragment.querySelector(`#${this._state.id}`)
       .addEventListener(`change`, this.onChange);
   }
 }
