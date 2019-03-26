@@ -11,7 +11,7 @@ class Filter extends Component {
       labelText: data.labelText,
     };
 
-    this.onChange = typeof options.onChange === `function` ? options.onChange : null;
+    this.onChange = typeof options.onChange === `function` ? options.onChange : () => {};
     this.onChange = this.onChange.bind(this);
   }
 
@@ -46,6 +46,7 @@ class Filter extends Component {
   }
 
   bind() {
+    // TODO переписать, чтобы обработчик не вешался 3 раза
     document.querySelector(`.trip-filter`)
       .addEventListener(`change`, this.onChange);
   }

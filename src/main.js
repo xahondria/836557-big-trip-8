@@ -10,24 +10,31 @@ import moment from "moment";
 
 window._options = {
   sort: `event_asc`,
+  filter: `everything`,
 };
 
 /*
 FILTERS
 */
+function getFilteredTripPoints(array, filter) {
+  switch (filter) {
+    case `everything`:
+      return array;
+    case `future`:
+      return array.filter((tripPoint) => tripPoint.getState().startTime > Date.now());
+    case `past`:
+      return array.filter((tripPoint) => tripPoint.getState().startTime < Date.now());
+    default:
+      return array;
+  }
+}
 
 const filterOptions = () => {
   return {
     onChange(ev) {
       ev.preventDefault();
-      const container = document.querySelector(`.trip-day__items`);
-      let filteredData = currentlyRenderedObjects.tripPoints;
-      if (ev.target.value !== `everything`) {
-        filteredData = utils.getRandomElementsFromArray(currentlyRenderedObjects.tripPoints, utils.getRandomInt(4));
-      }
-
-      container.innerHTML = ``;
-      utils.renderElements(container, filteredData.map((el) => el.render()));
+      window._options.filter = ev.target.value;
+      rerenderList();
     },
   };
 };
@@ -142,11 +149,15 @@ function updateTotalPrice() {
 }
 
 const rerenderList = () => {
-  updateSortTripPoints(currentlyRenderedObjects.tripPoints, window._options.sort);
+  // Фильтрация
+  currentlyRenderedObjects.filteredTripPoints = getFilteredTripPoints(currentlyRenderedObjects.tripPoints, window._options.filter);
+
+  // Сортировка
+  updateSortTripPoints(currentlyRenderedObjects.filteredTripPoints, window._options.sort);
   updateTotalPrice();
 
   // Группировка
-  const groups = currentlyRenderedObjects.tripPoints.reduce((memo, current) => {
+  const groups = currentlyRenderedObjects.filteredTripPoints.reduce((memo, current) => {
     const tripPointDate = moment(current.getState().startTime).startOf(`day`).toDate();
     if (!memo.length) {
       memo.push({
@@ -193,11 +204,7 @@ utils.defineCurrentlyRenderedObjects(
 
 rerenderList();
 
-
-// TODO сделать new event
-// TODO сделать сбор данных по _getFormData
-// TODO сделать статистику
-// TODO сделать сортировки
+// сортировки
 document.querySelector(`#sorting-time`).addEventListener(`click`, function () {
   const asc = window._options.sort === `time_asc`;
   window._options.sort = asc ? `time_desc` : `time_asc`;
@@ -213,5 +220,9 @@ document.querySelector(`#sorting-price`).addEventListener(`click`, function () {
   window._options.sort = asc ? `price_desc` : `price_asc`;
   rerenderList();
 });
+
+// TODO сделать new event
+// TODO сделать сбор данных по _getFormData
+// TODO сделать статистику
 // TODO менять total в правом верхнем углу
 // TODO менять описание поездки и даты в хедере
