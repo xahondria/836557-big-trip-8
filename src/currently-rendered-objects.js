@@ -1,2 +1,6 @@
-const currentlyRenderedObjects = {};
+const currentlyRenderedObjects = {
+  filters: [],
+  tripPoints: [],
+  tripDays: [],
+};
 export default currentlyRenderedObjects;

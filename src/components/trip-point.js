@@ -1,21 +1,31 @@
 import Component from "./component";
 import tripPointOffers from "./trip-point-offers";
-import TripPointEdit from "./trip-point-edit";
+import moment from "moment";
+import "moment-duration-format";
 
 class TripPoint extends Component {
-  constructor(data) {
+  /**
+   * @param {Object} data - input data for component
+   * @param {Object} options - options of TripPoint
+   * @param {Function} options.onEdit - event handler that will be bind for event, second argument is a reference to current TripPoint
+   * @param {Function} options.renderDays - renders day container for tripPoints
+   */
+  constructor(data, options = {}) {
     super();
     this._state = {
       icon: data.icon,
       tripType: data.tripType,
       city: data.city,
       timetable: data.timetable,
+      startTime: data.startTime,
       duration: data.duration,
       price: data.price,
+      isFavorite: data.isFavorite,
       offers: data.offers,
     };
 
-    this._onClick = this._onClick.bind(this);
+    this.onEdit = typeof options.onEdit === `function` ? options.onEdit : null;
+    this.onEdit = this.onEdit.bind(this);
 
   }
 
@@ -25,10 +35,10 @@ class TripPoint extends Component {
         <i class="trip-icon">${this._state.icon}</i>
         <h3 class="trip-point__title">${this._state.tripType} to ${this._state.city}</h3>
         <p class="trip-point__schedule">
-          <span class="trip-point__timetable">${this._state.timetable}</span>
-          <span class="trip-point__duration">${this._state.duration}</span>
+          <span class="trip-point__timetable">${this._state.startTime > 0 ? this._state.timetable : ``}</span>
+          <span class="trip-point__duration">${this._state.duration >= 0 ? moment.duration(this._state.duration).format(`H[` + `H ` + `]mm[` + `M` + `]`) : ``}</span>
         </p>
-        <p class="trip-point__price">${this._state.price}</p>
+        <p class="trip-point__price">&euro;&nbsp;${this._state.price}</p>
         <ul class="trip-point__offers">
           ${tripPointOffers(this._state.offers)}
         </ul>
@@ -36,15 +46,26 @@ class TripPoint extends Component {
     `.trim();
   }
 
-  _onClick(ev) {
-    ev.preventDefault();
-    const element = ev.currentTarget;
-    element.replaceWith(new TripPointEdit(this._state).render());
+  get offersPrice() {
+    return Object.keys(this._state.offers).reduce((acc, offer) => {
+      if (this._state.offers[offer].isChecked) {
+        return acc + parseInt(this._state.offers[offer].price, 10);
+      }
+      return acc;
+    }, 0);
+  }
+
+  get fullPrice() {
+    return parseInt(this._state.price, 10) + this.offersPrice;
   }
 
   bind() {
-    this._fragment.querySelector(`.trip-point`)
-      .addEventListener(`click`, this._onClick);
+    if (this.onEdit) {
+      this._element.addEventListener(`click`, this.onEdit);
+    }
+  }
+
+  unbind() {
   }
 }
 

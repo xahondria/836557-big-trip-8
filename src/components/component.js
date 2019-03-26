@@ -5,6 +5,7 @@ class Component {
     }
 
     this._fragment = null;
+    this._element = null;
     this._state = {};
   }
 
@@ -12,22 +13,52 @@ class Component {
     throw new Error(`You have to define template.`);
   }
 
+  getElement() {
+    return this._element;
+  }
+
+  getState() {
+    return JSON.parse(JSON.stringify((this._state)));
+  }
+
+  setState(newState) {
+    this._state = newState;
+  }
+
   bind() {
   }
 
-  updateComponent(element) {
-    element.replaceWith(this.render());
+  unbind() {
   }
 
-  createFragment(template) {
-    return document.createRange().createContextualFragment(template);
+  updateComponent(element) {
+    if (element._currentComponent) {
+      element._currentComponent.unbind();
+    }
+    const newElement = this.render();
+    element.replaceWith(newElement);
+    newElement._currentComponent = this;
+  }
+
+  createElement(template) {
+    const newElement = document.createElement(`div`);
+    newElement.innerHTML = template;
+    return newElement.firstChild;
   }
 
   render() {
-    this._fragment = this.createFragment(this.template);
+    this._element = this.createElement(this.template);
+    this._element._currentComponent = this;
     this.bind();
-    return this._fragment;
+    return this._element;
   }
+
+  unrender() {
+    this.unbind();
+    this._element.remove();
+    this._element = null;
+  }
+
 }
 
 export default Component;
