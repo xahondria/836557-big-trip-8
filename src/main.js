@@ -101,8 +101,23 @@ function updateSortTripPoints(array, asc = true) {
     : right._state.startTime - left._state.startTime);
 }
 
+function updateTotalPrice() {
+  const totalPrice = currentlyRenderedObjects.tripPoints.reduce((total, current) => {
+    const offersPrice = Object.keys(current._state.offers).reduce((acc, offer) => {
+      if (current._state.offers[offer].isChecked) {
+        return acc + parseInt(current._state.offers[offer].price, 10);
+      }
+      return acc;
+    }, 0);
+    return total + parseInt(current._state.price, 10) + offersPrice;
+
+  }, 0);
+  document.querySelector(`.trip__total-cost`).innerText = `€ ${totalPrice}`;
+}
+
 const rerenderList = () => {
   updateSortTripPoints(currentlyRenderedObjects.tripPoints, window._options.sort === `asc`);
+  updateTotalPrice();
 
   // Группировка
   const groups = currentlyRenderedObjects.tripPoints.reduce((memo, current) => {

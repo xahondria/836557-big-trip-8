@@ -71,7 +71,7 @@ function generateTripPoint() {
     },
     startTime: Date.now() + utils.getRandomInt(DATA.HOUR_DISPERSION) * DATA.HOUR_TO_MS_RATE,
     duration: 800000 + utils.getRandomInt(8000000),
-    price: `20`,
+    price: utils.getRandomInt(500),
     offers: getOffers(),
     get icon() {
       return DATA.tripTypes[this.tripType];
