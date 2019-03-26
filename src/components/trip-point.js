@@ -46,6 +46,19 @@ class TripPoint extends Component {
     `.trim();
   }
 
+  get offersPrice() {
+    return Object.keys(this._state.offers).reduce((acc, offer) => {
+      if (this._state.offers[offer].isChecked) {
+        return acc + parseInt(this._state.offers[offer].price, 10);
+      }
+      return acc;
+    }, 0);
+  }
+
+  get fullPrice() {
+    return parseInt(this._state.price, 10) + this.offersPrice;
+  }
+
   bind() {
     if (this.onEdit) {
       this._element.addEventListener(`click`, this.onEdit);

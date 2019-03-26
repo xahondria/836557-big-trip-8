@@ -9,7 +9,7 @@ import currentlyRenderedObjects from "./currently-rendered-objects";
 import moment from "moment";
 
 window._options = {
-  sort: `asc`,
+  sort: `event_asc`,
 };
 
 /*
@@ -94,34 +94,60 @@ const tripPointEditOptions = (tripPoint) => {
   };
 };
 
-function updateSortTripPoints(array, asc = true) {
-
-  array.sort((left, right) => asc
-    ? left._state.startTime - right._state.startTime
-    : right._state.startTime - left._state.startTime);
+function updateSortTripPoints(array, sortType = `time_asc`) {
+  switch (sortType) {
+    case `event_asc`:
+      array.sort((left, right) => {
+        if (left.getState().tripType > right.getState().tripType) {
+          return 1;
+        }
+        if (left.getState().tripType < right.getState().tripType) {
+          return -1;
+        }
+        return 0;
+      });
+      break;
+    case `event_desc`:
+      array.sort((left, right) => {
+        if (left.getState().tripType > right.getState().tripType) {
+          return -1;
+        }
+        if (left.getState().tripType < right.getState().tripType) {
+          return 1;
+        }
+        return 0;
+      });
+      break;
+    case `time_asc`:
+      array.sort((left, right) => left.getState().startTime - right.getState().startTime);
+      break;
+    case `time_desc`:
+      array.sort((left, right) => right.getState().startTime - left.getState().startTime);
+      break;
+    case `price_asc`:
+      array.sort((left, right) => left.fullPrice - right.fullPrice);
+      break;
+    case `price_desc`:
+      array.sort((left, right) => right.fullPrice - left.fullPrice);
+      break;
+  }
 }
 
 function updateTotalPrice() {
   const totalPrice = currentlyRenderedObjects.tripPoints.reduce((total, current) => {
-    const offersPrice = Object.keys(current._state.offers).reduce((acc, offer) => {
-      if (current._state.offers[offer].isChecked) {
-        return acc + parseInt(current._state.offers[offer].price, 10);
-      }
-      return acc;
-    }, 0);
-    return total + parseInt(current._state.price, 10) + offersPrice;
-
+    return total + current.fullPrice;
   }, 0);
+
   document.querySelector(`.trip__total-cost`).innerText = `€ ${totalPrice}`;
 }
 
 const rerenderList = () => {
-  updateSortTripPoints(currentlyRenderedObjects.tripPoints, window._options.sort === `asc`);
+  updateSortTripPoints(currentlyRenderedObjects.tripPoints, window._options.sort);
   updateTotalPrice();
 
   // Группировка
   const groups = currentlyRenderedObjects.tripPoints.reduce((memo, current) => {
-    const tripPointDate = moment(current._state.startTime).startOf(`day`).toDate();
+    const tripPointDate = moment(current.getState().startTime).startOf(`day`).toDate();
     if (!memo.length) {
       memo.push({
         key: tripPointDate,
@@ -173,8 +199,18 @@ rerenderList();
 // TODO сделать статистику
 // TODO сделать сортировки
 document.querySelector(`#sorting-time`).addEventListener(`click`, function () {
-  const asc = window._options.sort === `asc`;
-  window._options.sort = asc ? `desc` : `asc`;
+  const asc = window._options.sort === `time_asc`;
+  window._options.sort = asc ? `time_desc` : `time_asc`;
+  rerenderList();
+});
+document.querySelector(`#sorting-event`).addEventListener(`click`, function () {
+  const asc = window._options.sort === `event_asc`;
+  window._options.sort = asc ? `event_desc` : `event_asc`;
+  rerenderList();
+});
+document.querySelector(`#sorting-price`).addEventListener(`click`, function () {
+  const asc = window._options.sort === `price_asc`;
+  window._options.sort = asc ? `price_desc` : `price_asc`;
   rerenderList();
 });
 // TODO менять total в правом верхнем углу
