@@ -7,6 +7,7 @@ import FILTERS_DATA from "./mock/filters-data";
 import TripPointEdit from "./components/trip-point-edit";
 import currentlyRenderedObjects from "./currently-rendered-objects";
 import moment from "moment";
+import setChart from "./components/stats";
 
 window._options = {
   sort: `event_asc`,
@@ -34,7 +35,11 @@ const filterOptions = () => {
     onChange(ev) {
       ev.preventDefault();
       window._options.filter = ev.target.value;
-      rerenderList();
+      if (document.querySelector(`.view-switch-table`).classList.contains(`view-switch__item--active`)) {
+        rerenderList();
+      } else {
+        rerenderCharts();
+      }
     },
   };
 };
@@ -196,6 +201,12 @@ const rerenderList = () => {
       currentlyRenderedObjects.tripDays);
 };
 
+function rerenderCharts() {
+  window._moneyChart.destroy();
+  window._transportChart.destroy();
+  setChart(statsElement, getFilteredTripPoints(currentlyRenderedObjects.tripPoints, window._options.filter));
+}
+
 utils.defineCurrentlyRenderedObjects(
     TRIP_POINTS_DATA,
     TripPoint,
@@ -219,6 +230,37 @@ document.querySelector(`#sorting-price`).addEventListener(`click`, function () {
   const asc = window._options.sort === `price_asc`;
   window._options.sort = asc ? `price_desc` : `price_asc`;
   rerenderList();
+});
+
+// Статистика
+const tableButton = document.querySelector(`.view-switch-table`);
+const statsButton = document.querySelector(`.view-switch-stats`);
+const tableElement = document.querySelector(`#table`);
+const statsElement = document.querySelector(`#stats`);
+
+tableButton.addEventListener((`click`), function () {
+  if (tableButton.classList.contains(`view-switch__item--active`)) {
+    return;
+  }
+  tableButton.classList.add(`view-switch__item--active`);
+  statsButton.classList.remove(`view-switch__item--active`);
+  statsElement.classList.add(`visually-hidden`);
+  tableElement.classList.remove(`visually-hidden`);
+  window._moneyChart.destroy();
+  window._transportChart.destroy();
+  window._timeSpendChart.destroy();
+});
+
+statsButton.addEventListener((`click`), function () {
+  if (statsButton.classList.contains(`view-switch__item--active`)) {
+    return;
+  }
+  statsButton.classList.add(`view-switch__item--active`);
+  tableButton.classList.remove(`view-switch__item--active`);
+  tableElement.classList.add(`visually-hidden`);
+  statsElement.classList.remove(`visually-hidden`);
+
+  setChart(statsElement, getFilteredTripPoints(currentlyRenderedObjects.tripPoints, window._options.filter));
 });
 
 // TODO сделать new event
