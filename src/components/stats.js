@@ -19,10 +19,49 @@ function setChart(statsElement, data) {
   });
 
   // Группировка
+  let chartTransportData = {
+    transportLabels: [],
+    transportTypeCounts: [],
+  };
+
+  if (tripPointsSortedByTripType.length) {
+    chartTransportData = tripPointsSortedByTripType.reduce((memo, current) => {
+      const transportTypes = new Set([
+        `taxi`,
+        `bus`,
+        `train`,
+        `ship`,
+        `transport`,
+        `drive`,
+        `flight`,
+      ]);
+
+      if (transportTypes.has(current.getState().tripType)) {
+        const transportLabel = `${current.getState().icon} ${current.getState().tripType}`;
+        if (!Object.entries(memo).length) {
+          memo = {
+            transportLabels: [transportLabel],
+            transportTypeCounts: [1],
+          };
+        } else {
+          const prevLabel = memo.transportLabels[memo.transportLabels.length - 1];
+
+          if (prevLabel === transportLabel) {
+            memo.transportTypeCounts[memo.transportTypeCounts.length - 1] += 1;
+
+          } else {
+            memo.transportLabels.push(transportLabel);
+            memo.transportTypeCounts.push(1);
+          }
+        }
+      }
+      return memo;
+    }, {});
+  }
+
   let chartsData = {
     labels: [],
     moneySpent: [],
-    tripTypeCounts: [],
     timeSpent: [],
   };
   if (tripPointsSortedByTripType.length) {
@@ -32,7 +71,6 @@ function setChart(statsElement, data) {
         memo = {
           labels: [label],
           moneySpent: [parseInt(current.fullPrice, 10)],
-          tripTypeCounts: [1],
           timeSpent: [parseInt(moment.duration(current.getState().duration).format(`H`), 10)],
         };
       } else {
@@ -40,14 +78,11 @@ function setChart(statsElement, data) {
 
         if (prevLabel === label) {
           memo.moneySpent[memo.moneySpent.length - 1] += parseInt(current.fullPrice, 10);
-          memo.tripTypeCounts[memo.tripTypeCounts.length - 1] += 1;
           memo.timeSpent[memo.timeSpent.length - 1] += parseInt(moment.duration(current.getState().duration).format(`H`), 10);
 
         } else {
           memo.labels.push(label);
           memo.moneySpent.push(parseInt(current.fullPrice, 10));
-          memo.tripTypeCounts.push(1);
-          // memo.timeSpent.push(new Date(current.getState().duration));
           memo.timeSpent.push(parseInt(moment.duration(current.getState().duration).format(`H`), 10));
         }
       }
@@ -129,9 +164,9 @@ function setChart(statsElement, data) {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: [...chartsData.labels],
+      labels: [...chartTransportData.transportLabels],
       datasets: [{
-        data: [...chartsData.tripTypeCounts],
+        data: [...chartTransportData.transportTypeCounts],
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
         anchor: `start`
