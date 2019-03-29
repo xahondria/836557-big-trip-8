@@ -44,13 +44,15 @@ class TripPointEdit extends Component {
       city: data.city,
       timetable: data.timetable,
       startTime: data.startTime,
+      endTime: data.endTime,
       duration: data.duration,
       price: parseInt(data.price, 10),
       isFavorite: data.isFavorite,
       offers: data.offers,
     };
 
-    this.timePicker = null;
+    this.startTimePicker = null;
+    this.endTimePicker = null;
 
     this.onSave = typeof options.onSave === `function` ? options.onSave : () => {};
     this.onClose = typeof options.onClose === `function` ? options.onClose : () => {};
@@ -62,7 +64,8 @@ class TripPointEdit extends Component {
     this.onClose = this.onClose.bind(this);
     this.onSave = this.onSave.bind(this);
     this._onChangeOffers = this._onChangeOffers.bind(this);
-    this._onTimeChange = this._onTimeChange.bind(this);
+    this._onStartTimeChange = this._onStartTimeChange.bind(this);
+    this._onEndTimeChange = this._onEndTimeChange.bind(this);
     this._onPriceChange = this._onPriceChange.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
 
@@ -166,16 +169,23 @@ class TripPointEdit extends Component {
               </datalist>
             </div>
       
-            <label class="point__time">
+            <div class="point__time">
               choose time
               <input 
-                class="point__input" 
+                class="point__input date-start" 
                 type="text" 
+                name="date-start"
                 placeholder="00:00 — 00:00"
-                value="${this._state.startTime > 0 ? this._state.timetable : ``}" 
-                name="time" 
+                value="${moment(this._state.startTime).format(`HH:mm`)}" 
               >
-            </label>
+              <input 
+                class="point__input date-end" 
+                type="text" 
+                name="date-end" 
+                placeholder="21:00"
+                value="${moment(this._state.endTime).format(`HH:mm`)}" 
+              >
+            </div>
       
             <label class="point__price">
               write price
@@ -249,8 +259,11 @@ class TripPointEdit extends Component {
   }
 
   destroyFlatpickr() {
-    if (this.timePicker) {
-      this.timePicker.destroy();
+    if (this.startTimePicker) {
+      this.startTimePicker.destroy();
+    }
+    if (this.endTimePicker) {
+      this.endTimePicker.destroy();
     }
   }
 
@@ -266,14 +279,28 @@ class TripPointEdit extends Component {
     this._state.city = ev.target.value;
   }
 
-  _onTimeChange(selectedDates) {
-    if (selectedDates.length === 2) {
-      this._state.startTime = selectedDates[0].valueOf();
-      this._state.duration = selectedDates[1].valueOf() - this._state.startTime;
-      this._state.timetable = `
-        ${moment(this._state.startTime).format(`HH:mm`)} &mdash; ${moment(this._state.startTime + this._state.duration).format(`HH:mm`)}
-      `.trim();
+  _onStartTimeChange(date) {
+    this._state.startTime = date[0].valueOf();
+    if (this._state.startTime > this._state.endTime) {
+      this._state.endTime = this._state.startTime;
     }
+    this._state.duration = this._state.endTime - this._state.startTime;
+    this._state.timetable = `
+        ${moment(this._state.startTime).format(`HH:mm`)} &mdash; ${moment(this._state.endTime).format(`HH:mm`)}
+      `.trim();
+    this.updateComponent(this._element);
+  }
+
+  _onEndTimeChange(date) {
+    this._state.endTime = date[0].valueOf();
+    if (this._state.endTime < this._state.startTime) {
+      this._state.startTime = this._state.endTime;
+    }
+    this._state.duration = this._state.endTime - this._state.startTime;
+    this._state.timetable = `
+        ${moment(this._state.startTime).format(`HH:mm`)} &mdash; ${moment(this._state.endTime).format(`HH:mm`)}
+      `.trim();
+    this.updateComponent(this._element);
   }
 
   _onPriceChange(ev) {
@@ -311,17 +338,23 @@ class TripPointEdit extends Component {
     this._element.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onDestinationChange);
 
-    this.timePicker = flatpickr(
-        this._element.querySelector(`.point__time .point__input`),
+    this.startTimePicker = flatpickr(
+        this._element.querySelector(`.date-start`),
         {
           enableTime: true,
           dateFormat: `H:i`,
-          mode: `range`,
-          locale: {
-            rangeSeparator: ` — `
-          },
           onClose: (selectedDates) => {
-            this._onTimeChange(selectedDates);
+            this._onStartTimeChange(selectedDates);
+          }
+        });
+
+    this.endTimePicker = flatpickr(
+        this._element.querySelector(`.date-end`),
+        {
+          enableTime: true,
+          dateFormat: `H:i`,
+          onClose: (selectedDates) => {
+            this._onEndTimeChange(selectedDates);
           }
         });
 

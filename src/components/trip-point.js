@@ -18,6 +18,7 @@ class TripPoint extends Component {
       city: data.city,
       timetable: data.timetable,
       startTime: data.startTime,
+      endTime: data.endTime,
       duration: data.duration,
       price: data.price,
       isFavorite: data.isFavorite,
