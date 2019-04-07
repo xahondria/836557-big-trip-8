@@ -13,10 +13,10 @@ class TripPoint extends Component {
   constructor(data, options = {}) {
     super();
     this._state = {
+      id: data.id,
       icon: data.icon,
       tripType: data.tripType,
       city: data.city,
-      timetable: data.timetable,
       startTime: data.startTime,
       endTime: data.endTime,
       duration: data.duration,
@@ -30,14 +30,28 @@ class TripPoint extends Component {
 
   }
 
+  get timetable() {
+    const {startTime, endTime} = this._state;
+    if (startTime <= 0) {
+      return ``;
+    }
+    return `
+      ${moment(startTime).format(`HH:mm`)} &mdash; ${moment(endTime).format(`HH:mm`)}
+    `.trim();
+  }
+
+  get duration() {
+    return this._state.duration >= 0 ? moment.duration(this._state.duration).format(`H[` + `H ` + `]mm[` + `M` + `]`) : ``;
+  }
+
   get template() {
     return `
       <article class="trip-point">
         <i class="trip-icon">${this._state.icon}</i>
-        <h3 class="trip-point__title">${this._state.tripType} to ${this._state.city}</h3>
+        <h3 class="trip-point__title">${this._state.tripType} to ${this._state.city.name}</h3>
         <p class="trip-point__schedule">
-          <span class="trip-point__timetable">${this._state.startTime > 0 ? this._state.timetable : ``}</span>
-          <span class="trip-point__duration">${this._state.duration >= 0 ? moment.duration(this._state.duration).format(`H[` + `H ` + `]mm[` + `M` + `]`) : ``}</span>
+          <span class="trip-point__timetable">${this.timetable}</span>
+          <span class="trip-point__duration">${this.duration}</span>
         </p>
         <p class="trip-point__price">&euro;&nbsp;${this._state.price}</p>
         <ul class="trip-point__offers">

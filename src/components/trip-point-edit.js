@@ -3,6 +3,8 @@ import Component from "./component";
 import tripPointEditDestinations from "./trip-point-edit-destinations";
 import moment from "moment";
 import tripPointEditOffers from "./trip-point-edit-offers";
+import tripPointIcons from "../constants/tripPointIcons";
+import {getCache} from '../cache';
 
 class TripPointEdit extends Component {
   /**
@@ -14,35 +16,17 @@ class TripPointEdit extends Component {
    */
   constructor(data, options = {}) {
     super();
+    const destinations = getCache(`destinations`);
+    const cities = destinations.map((d) => d.name);
     this._props = {
-      tripTypes: {
-        'taxi': `🚕`,
-        'bus': `🚌`,
-        'train': `🚂`,
-        'ship': `🛳️`,
-        'transport': `🚊`,
-        'drive': `🚗`,
-        'flight': `✈`,
-        'check-in': `🏨`,
-        'sight-seeing': `🏛`,
-        'restaurant': `🍴`,
-      },
-      cities: [
-        `Baghdad`,
-        `Bahia Blanca`,
-        `Baku`,
-        `Bandung`,
-        `Bangalore`,
-        `Bangkok`,
-        `Banjul`,
-        `Barcelona`,
-      ],
+      tripTypes: tripPointIcons,
+      cities,
     };
     this._state = {
+      id: data.id,
       icon: data.icon,
       tripType: data.tripType,
       city: data.city,
-      timetable: data.timetable,
       startTime: data.startTime,
       endTime: data.endTime,
       duration: data.duration,

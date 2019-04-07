@@ -346,6 +346,7 @@ input[type=radio]:checked + .trip-sorting__item {
   background: none;
   border: 0;
   color: #199cfa;
+  text-align: left;
   cursor: pointer;
   font-weight: 700;
   margin: 0 0 5px;

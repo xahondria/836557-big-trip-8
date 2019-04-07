@@ -1,13 +1,14 @@
 import Filter from "./components/filter";
 import TripPoint from "./components/trip-point";
 import TripDay from "./components/trip-day";
-import TRIP_POINTS_DATA from "./mock/trip-points-data";
 import utils from "./utils";
 import FILTERS_DATA from "./mock/filters-data";
 import TripPointEdit from "./components/trip-point-edit";
 import currentlyRenderedObjects from "./currently-rendered-objects";
 import moment from "moment";
 import setChart from "./components/stats";
+import API from "./api";
+import {storeCache} from "./cache";
 
 window._options = {
   sort: `event_asc`,
@@ -207,13 +208,21 @@ function rerenderCharts() {
   setChart(statsElement, getFilteredTripPoints(currentlyRenderedObjects.tripPoints, window._options.filter));
 }
 
-utils.defineCurrentlyRenderedObjects(
-    TRIP_POINTS_DATA,
-    TripPoint,
-    tripPointOptions(),
-    `tripPoints`);
+window.Promise.all([
+  API.getTripPoints(),
+  API.getTripPointDestinations()
+]).then(([tripPoints, destinations]) => {
+  storeCache(`destinations`, destinations);
+  console.log(destinations);
+  utils.defineCurrentlyRenderedObjects(
+      tripPoints,
+      TripPoint,
+      tripPointOptions(),
+      `tripPoints`
+  );
 
-rerenderList();
+  rerenderList();
+});
 
 // сортировки
 document.querySelector(`#sorting-time`).addEventListener(`click`, function () {
