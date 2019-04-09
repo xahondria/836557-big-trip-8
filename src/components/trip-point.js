@@ -19,7 +19,6 @@ class TripPoint extends Component {
       city: data.city,
       startTime: data.startTime,
       endTime: data.endTime,
-      duration: data.duration,
       price: data.price,
       isFavorite: data.isFavorite,
       offers: data.offers,
@@ -41,7 +40,8 @@ class TripPoint extends Component {
   }
 
   get duration() {
-    return this._state.duration >= 0 ? moment.duration(this._state.duration).format(`H[` + `H ` + `]mm[` + `M` + `]`) : ``;
+    const duration = this._state.endTime - this._state.startTime;
+    return duration >= 0 ? moment.duration(duration).format(`H[` + `H ` + `]mm[` + `M` + `]`) : ``;
   }
 
   get template() {
@@ -63,7 +63,7 @@ class TripPoint extends Component {
 
   get offersPrice() {
     return Object.keys(this._state.offers).reduce((acc, offer) => {
-      if (this._state.offers[offer].isChecked) {
+      if (this._state.offers[offer].accepted) {
         return acc + parseInt(this._state.offers[offer].price, 10);
       }
       return acc;

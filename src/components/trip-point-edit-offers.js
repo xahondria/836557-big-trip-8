@@ -1,6 +1,7 @@
 function tripPointEditOffers(offers) {
   if (typeof offers === `object`) {
-    return Object.getOwnPropertyNames(offers).map((offer) => {
+    return Object.keys(offers).map((offer) => {
+      const offerName = offers[offer].title ? offers[offer].title : offers[offer].name;
       return `
         <input 
           class="point__offers-input visually-hidden" 
@@ -8,10 +9,10 @@ function tripPointEditOffers(offers) {
           id="${offer}" 
           name="offer" 
           value="${offer}"
-          ${offers[offer].isChecked && `checked`}
+          ${offers[offer].accepted && `checked`}
         >
         <label for="${offer}" class="point__offers-label">
-          <span class="point__offer-service">${offers[offer].title}</span> + €<span class="point__offer-price">${offers[offer].price}</span>
+          <span class="point__offer-service">${offerName}</span> + €<span class="point__offer-price">${offers[offer].price}</span>
         </label>
         `;
     })

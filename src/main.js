@@ -9,6 +9,7 @@ import moment from "moment";
 import setChart from "./components/stats";
 import API from "./api";
 import {storeCache} from "./cache";
+import {getCache} from "./cache";
 
 window._options = {
   sort: `event_asc`,
@@ -210,10 +211,11 @@ function rerenderCharts() {
 
 window.Promise.all([
   API.getTripPoints(),
-  API.getTripPointDestinations()
-]).then(([tripPoints, destinations]) => {
+  API.getTripPointDestinations(),
+  API.getTripPointOffers(),
+]).then(([tripPoints, destinations, offers]) => {
   storeCache(`destinations`, destinations);
-  console.log(destinations);
+  storeCache(`offers`, offers);
   utils.defineCurrentlyRenderedObjects(
       tripPoints,
       TripPoint,

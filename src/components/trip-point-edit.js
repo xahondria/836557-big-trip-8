@@ -5,6 +5,7 @@ import moment from "moment";
 import tripPointEditOffers from "./trip-point-edit-offers";
 import tripPointIcons from "../constants/tripPointIcons";
 import {getCache} from '../cache';
+import tripPointEditPictures from "./trip-point-edit-pictures";
 
 class TripPointEdit extends Component {
   /**
@@ -29,7 +30,6 @@ class TripPointEdit extends Component {
       city: data.city,
       startTime: data.startTime,
       endTime: data.endTime,
-      duration: data.duration,
       price: parseInt(data.price, 10),
       isFavorite: data.isFavorite,
       offers: data.offers,
@@ -131,8 +131,8 @@ class TripPointEdit extends Component {
                     class="travel-way__select-input visually-hidden" 
                     type="radio" id="travel-way-sightseeing" 
                     name="travel-way" 
-                    value="sight-seeing" 
-                    ${this._state.tripType === `sight-seeing` && `checked`}   
+                    value="sightseeing" 
+                    ${this._state.tripType === `sightseeing` && `checked`}   
                   >
                   <label class="travel-way__select-label" for="travel-way-sightseeing">🏛 sightseeing</label>
                 </div>
@@ -145,7 +145,7 @@ class TripPointEdit extends Component {
                 class="point__destination-input" 
                 list="destination-select" 
                 id="destination" 
-                value=${this._state.city} 
+                value=${this._state.city.name} 
                 name="destination"
               >
               <datalist id="destination-select">
@@ -210,13 +210,11 @@ class TripPointEdit extends Component {
             </section>
             <section class="point__destination">
               <h3 class="point__details-title">Destination</h3>
-              <p class="point__destination-text">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+              <p class="point__destination-text">
+                ${this._state.city.description}
+              </p>
               <div class="point__destination-images">
-                <img src="http://picsum.photos/330/140?r=123" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/300/200?r=1234" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/300/100?r=12345" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/200/300?r=123456" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/100/300?r=1234567" alt="picture from place" class="point__destination-image">
+                ${tripPointEditPictures(this._state.city.pictures)};
               </div>
             </section>
             <input type="hidden" class="point__total-price" name="total-price" value="">
@@ -255,12 +253,14 @@ class TripPointEdit extends Component {
     ev.preventDefault();
     this._state.tripType = ev.target.value;
     this._state.icon = this._props.tripTypes[this._state.tripType];
+    this._state.offers = getCache(`offers`).find((offerOfType) => offerOfType.type === this._state.tripType).offers;
     this.updateComponent(ev.target.closest(`.point`));
   }
 
   _onDestinationChange(ev) {
     ev.preventDefault();
-    this._state.city = ev.target.value;
+    this._state.city = getCache(`destinations`).find((destination) => destination.name === ev.target.value);
+    this.updateComponent(ev.target.closest(`.point`));
   }
 
   _onStartTimeChange(date) {
@@ -268,7 +268,6 @@ class TripPointEdit extends Component {
     if (this._state.startTime > this._state.endTime) {
       this._state.endTime = this._state.startTime;
     }
-    this._state.duration = this._state.endTime - this._state.startTime;
     this._state.timetable = `
         ${moment(this._state.startTime).format(`HH:mm`)} &mdash; ${moment(this._state.endTime).format(`HH:mm`)}
       `.trim();
@@ -280,7 +279,6 @@ class TripPointEdit extends Component {
     if (this._state.endTime < this._state.startTime) {
       this._state.startTime = this._state.endTime;
     }
-    this._state.duration = this._state.endTime - this._state.startTime;
     this._state.timetable = `
         ${moment(this._state.startTime).format(`HH:mm`)} &mdash; ${moment(this._state.endTime).format(`HH:mm`)}
       `.trim();
@@ -299,7 +297,7 @@ class TripPointEdit extends Component {
 
   _onChangeOffers(ev) {
     ev.preventDefault();
-    this._state.offers[ev.target.value].isChecked = ev.target.checked;
+    this._state.offers[ev.target.value].accepted = ev.target.checked;
   }
 
   bind() {

@@ -25,23 +25,31 @@ class API {
   getTripPoints() {
     return this._request({
       url: `/points`,
-    }).then((tripPoints) => tripPoints.map((tripPoint) => ({
-      id: tripPoint.id,
-      icon: this.tripPointIcons[tripPoint.type],
-      tripType: tripPoint.type,
-      city: tripPoint.destination,
-      startTime: tripPoint.date_from,
-      endTime: tripPoint.date_to,
-      duration: tripPoint.duration,
-      price: tripPoint.base_price,
-      isFavorite: tripPoint.is_favorite,
-      offers: tripPoint.offers,
-    })));
+    }).then((tripPoints) => {
+      console.log(tripPoints);
+      return tripPoints.map((tripPoint) => ({
+        id: tripPoint.id,
+        icon: this.tripPointIcons[tripPoint.type],
+        tripType: tripPoint.type,
+        city: tripPoint.destination,
+        startTime: tripPoint.date_from,
+        endTime: tripPoint.date_to,
+        price: tripPoint.base_price,
+        isFavorite: tripPoint.is_favorite,
+        offers: tripPoint.offers,
+      }));
+    });
   }
 
   getTripPointDestinations() {
     return this._request({
       url: `/destinations`,
+    });
+  }
+
+  getTripPointOffers() {
+    return this._request({
+      url: `/offers`,
     });
   }
 
