@@ -1,10 +1,11 @@
 function tripPointOffers(offers) {
-  if (typeof offers === `object`) {
-    return Object.getOwnPropertyNames(offers).map((offer) => {
-      if (offers[offer].isChecked) {
+  if (Array.isArray(offers)) {
+    return offers.map((offer) => {
+      const offerName = typeof offer.title !== `undefined` ? offer.title : offer.name;
+      if (offer.accepted) {
         return `
           <li>
-            <button class="trip-point__offer">${offers[offer].title} +${offers[offer].price}</button>
+            <button class="trip-point__offer">${offerName} +${offer.price}</button>
           </li>
         `;
       } else {

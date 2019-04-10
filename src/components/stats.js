@@ -67,23 +67,24 @@ function setChart(statsElement, data) {
   if (tripPointsSortedByTripType.length) {
     chartsData = tripPointsSortedByTripType.reduce((memo, current) => {
       const label = `${current.getState().icon} ${current.getState().tripType}`;
+      const duration = current.getState().endTime - current.getState().startTime;
       if (!Object.entries(memo).length) {
         memo = {
           labels: [label],
           moneySpent: [parseInt(current.fullPrice, 10)],
-          timeSpent: [parseInt(moment.duration(current.getState().duration).format(`H`), 10)],
+          timeSpent: [parseInt(moment.duration(duration).format(`H`), 10)],
         };
       } else {
         const prevLabel = memo.labels[memo.labels.length - 1];
 
         if (prevLabel === label) {
           memo.moneySpent[memo.moneySpent.length - 1] += parseInt(current.fullPrice, 10);
-          memo.timeSpent[memo.timeSpent.length - 1] += parseInt(moment.duration(current.getState().duration).format(`H`), 10);
+          memo.timeSpent[memo.timeSpent.length - 1] += parseInt(moment.duration(duration).format(`H`), 10);
 
         } else {
           memo.labels.push(label);
           memo.moneySpent.push(parseInt(current.fullPrice, 10));
-          memo.timeSpent.push(parseInt(moment.duration(current.getState().duration).format(`H`), 10));
+          memo.timeSpent.push(parseInt(moment.duration(duration).format(`H`), 10));
         }
       }
       return memo;

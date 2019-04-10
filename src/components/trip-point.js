@@ -13,12 +13,12 @@ class TripPoint extends Component {
   constructor(data, options = {}) {
     super();
     this._state = {
+      id: data.id,
       icon: data.icon,
       tripType: data.tripType,
       city: data.city,
-      timetable: data.timetable,
       startTime: data.startTime,
-      duration: data.duration,
+      endTime: data.endTime,
       price: data.price,
       isFavorite: data.isFavorite,
       offers: data.offers,
@@ -29,14 +29,29 @@ class TripPoint extends Component {
 
   }
 
+  get timetable() {
+    const {startTime, endTime} = this._state;
+    if (startTime <= 0) {
+      return ``;
+    }
+    return `
+      ${moment(startTime).format(`HH:mm`)} &mdash; ${moment(endTime).format(`HH:mm`)}
+    `.trim();
+  }
+
+  get duration() {
+    const duration = this._state.endTime - this._state.startTime;
+    return duration >= 0 ? moment.duration(duration).format(`H[` + `H ` + `]mm[` + `M` + `]`) : ``;
+  }
+
   get template() {
     return `
       <article class="trip-point">
         <i class="trip-icon">${this._state.icon}</i>
-        <h3 class="trip-point__title">${this._state.tripType} to ${this._state.city}</h3>
+        <h3 class="trip-point__title">${this._state.tripType} to ${this._state.city.name}</h3>
         <p class="trip-point__schedule">
-          <span class="trip-point__timetable">${this._state.startTime > 0 ? this._state.timetable : ``}</span>
-          <span class="trip-point__duration">${this._state.duration >= 0 ? moment.duration(this._state.duration).format(`H[` + `H ` + `]mm[` + `M` + `]`) : ``}</span>
+          <span class="trip-point__timetable">${this.timetable}</span>
+          <span class="trip-point__duration">${this.duration}</span>
         </p>
         <p class="trip-point__price">&euro;&nbsp;${this._state.price}</p>
         <ul class="trip-point__offers">
@@ -48,7 +63,7 @@ class TripPoint extends Component {
 
   get offersPrice() {
     return Object.keys(this._state.offers).reduce((acc, offer) => {
-      if (this._state.offers[offer].isChecked) {
+      if (this._state.offers[offer].accepted) {
         return acc + parseInt(this._state.offers[offer].price, 10);
       }
       return acc;
