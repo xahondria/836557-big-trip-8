@@ -9,7 +9,7 @@ const Methods = {
 
 const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
-    return response.json();
+    return response;
   } else {
     throw new Error(`${response.status}: ${response.statusText}`);
   }
@@ -25,66 +25,88 @@ class API {
   getTripPoints() {
     return this._request({
       url: `/points`,
-    }).then((tripPoints) => {
-      console.log(tripPoints);
-      return tripPoints.map((tripPoint) => ({
-        id: tripPoint.id,
-        icon: this.tripPointIcons[tripPoint.type],
-        tripType: tripPoint.type,
-        city: tripPoint.destination,
-        startTime: tripPoint.date_from,
-        endTime: tripPoint.date_to,
-        price: tripPoint.base_price,
-        isFavorite: tripPoint.is_favorite,
-        offers: tripPoint.offers,
-      }));
-    });
+    })
+      .then((response) => response.json())
+      .then((tripPoints) => {
+        console.log(tripPoints);
+        return tripPoints.map((tripPoint) => ({
+          id: tripPoint.id,
+          icon: this.tripPointIcons[tripPoint.type],
+          tripType: tripPoint.type,
+          city: tripPoint.destination,
+          startTime: tripPoint.date_from,
+          endTime: tripPoint.date_to,
+          price: tripPoint.base_price,
+          isFavorite: tripPoint.is_favorite,
+          offers: tripPoint.offers,
+        }));
+      });
   }
 
   getTripPointDestinations() {
     return this._request({
       url: `/destinations`,
-    });
+    }).then((response) => response.json()
+      .then((destinations) => destinations));
   }
 
   getTripPointOffers() {
     return this._request({
       url: `/offers`,
-    });
+    }).then((response) => response.json()
+      .then((offers) => offers));
   }
 
   createTripPoint(newTripPoint) {
-    return this._request({
-      url: `/points`,
-      method: Methods.POST,
-      body: newTripPoint,
-    });
+    console.log(newTripPoint);
+    // return this._request({
+    //   url: `/points`,
+    //   method: Methods.POST,
+    //   body: newTripPoint,
+    // });
   }
 
-  updateTripPoint(id, newTripPoint) {
+  updateTripPoint(state) {
+    const newTripPoint = {
+      'id': state.id,
+      'base_price': state.price,
+      'date_from': state.startTime,
+      'date_to': state.endTime,
+      'destination': state.city,
+      'is_favorite': state.isFavorite,
+      'offers': state.offers,
+      'type': state.tripType,
+    };
     return this._request({
-      url: `/points/${id}`,
+      url: `/points/${state.id}`,
       method: Methods.PUT,
       body: newTripPoint,
-    });
+    }).then((response) => response.json()
+      .then((tripPoint) => tripPoint));
   }
 
   deleteTripPoint(id) {
     return this._request({
       url: `/points/${id}`,
       method: Methods.DELETE,
+      body: null,
+      headers: new Headers({
+        'Authorization': this._authorization,
+        'Content-Type': `application/json`
+      })
+
     });
   }
 
   _request({
     url,
     method = Methods.GET,
-    body = null
+    body = null,
+    headers = new Headers({
+      'Authorization': this._authorization,
+      'Content-Type': `application/json`
+    })
   }) {
-    const headers = new Headers();
-    headers.append(`Authorization`, this._authorization);
-    // headers.append(`Content-Type`, `application/json`);
-
     return fetch(
         `${this._endPoint}/${url.replace(/^\//, ``)}`,
         {

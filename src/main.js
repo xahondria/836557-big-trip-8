@@ -9,7 +9,7 @@ import moment from "moment";
 import setChart from "./components/stats";
 import API from "./api";
 import {storeCache} from "./cache";
-import {getCache} from "./cache";
+import tripPointsIcons from "./constants/tripPointIcons";
 
 window._options = {
   sort: `event_asc`,
@@ -87,9 +87,26 @@ const tripPointEditOptions = (tripPoint) => {
       const element = ev.currentTarget.closest(`.point`);
       ev.preventDefault();
       this.destroyFlatpickr();
-      tripPoint.setState(this.getState());
-      tripPoint.updateComponent(element);
-      rerenderList();
+      const currentState = this.getState();
+
+      API.updateTripPoint(currentState)
+        .then((newTripPoint) => {
+          const newState = {
+            id: newTripPoint.id,
+            icon: tripPointsIcons[newTripPoint.type],
+            tripType: newTripPoint.type,
+            city: newTripPoint.destination,
+            startTime: newTripPoint.date_from,
+            endTime: newTripPoint.date_to,
+            price: newTripPoint.base_price,
+            isFavorite: newTripPoint.is_favorite,
+            offers: newTripPoint.offers,
+          };
+          tripPoint.setState(newState);
+          tripPoint.updateComponent(element);
+          rerenderList();
+        });
+
     },
     onClose(ev) {
       if (ev.key === `Escape`) {
@@ -100,9 +117,12 @@ const tripPointEditOptions = (tripPoint) => {
     },
     onDelete(ev) {
       ev.preventDefault();
-      this.unrender();
-      currentlyRenderedObjects.tripPoints = currentlyRenderedObjects.tripPoints.filter((tp) => tp !== tripPoint);
-      rerenderList();
+      API.deleteTripPoint(this._state.id)
+      .then(() => {
+        this.unrender();
+        currentlyRenderedObjects.tripPoints = currentlyRenderedObjects.tripPoints.filter((tp) => tp !== tripPoint);
+        rerenderList();
+      });
     },
 
   };
@@ -209,7 +229,7 @@ function rerenderCharts() {
   setChart(statsElement, getFilteredTripPoints(currentlyRenderedObjects.tripPoints, window._options.filter));
 }
 
-window.Promise.all([
+Promise.all([
   API.getTripPoints(),
   API.getTripPointDestinations(),
   API.getTripPointOffers(),

@@ -1,7 +1,7 @@
 function tripPointEditOffers(offers) {
   if (typeof offers === `object`) {
     return Object.keys(offers).map((offer) => {
-      const offerName = offers[offer].title ? offers[offer].title : offers[offer].name;
+      const offerName = typeof offers[offer].title !== `undefined` ? offers[offer].title : offers[offer].name;
       return `
         <input 
           class="point__offers-input visually-hidden" 
