@@ -28,7 +28,6 @@ class API {
     })
       .then((response) => response.json())
       .then((tripPoints) => {
-        console.log(tripPoints);
         return tripPoints.map((tripPoint) => ({
           id: tripPoint.id,
           icon: this.tripPointIcons[tripPoint.type],
@@ -58,12 +57,11 @@ class API {
   }
 
   createTripPoint(newTripPoint) {
-    console.log(newTripPoint);
-    // return this._request({
-    //   url: `/points`,
-    //   method: Methods.POST,
-    //   body: newTripPoint,
-    // });
+    return this._request({
+      url: `/points`,
+      method: Methods.POST,
+      body: newTripPoint,
+    });
   }
 
   updateTripPoint(state) {
@@ -78,7 +76,7 @@ class API {
       'type': state.tripType,
     };
     return this._request({
-      url: `/points/${state.id}`,
+      url: `/point5s/${state.id}`,
       method: Methods.PUT,
       body: newTripPoint,
     }).then((response) => response.json()
