@@ -23,7 +23,6 @@ class TripPoint extends Component {
       isFavorite: data.isFavorite,
       offers: data.offers,
     };
-
     this.onEdit = typeof options.onEdit === `function` ? options.onEdit : null;
     this.onEdit = this.onEdit.bind(this);
 
@@ -44,11 +43,25 @@ class TripPoint extends Component {
     return duration >= 0 ? moment.duration(duration).format(`H[` + `H ` + `]mm[` + `M` + `]`) : ``;
   }
 
+  get tripTypeIcon() {
+    if (typeof this._state.icon !== `undefined`) {
+      return this._state.icon;
+    }
+    return ``;
+  }
+
+  get destinationName() {
+    if (typeof this._state.city !== `undefined`) {
+      return this._state.city.name;
+    }
+    return ``;
+  }
+
   get template() {
     return `
       <article class="trip-point">
-        <i class="trip-icon">${this._state.icon}</i>
-        <h3 class="trip-point__title">${this._state.tripType} to ${this._state.city.name}</h3>
+        <i class="trip-icon">${this.tripTypeIcon}</i>
+        <h3 class="trip-point__title">${this._state.tripType} to ${this.destinationName}</h3>
         <p class="trip-point__schedule">
           <span class="trip-point__timetable">${this.timetable}</span>
           <span class="trip-point__duration">${this.duration}</span>

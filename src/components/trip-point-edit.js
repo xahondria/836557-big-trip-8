@@ -55,24 +55,43 @@ class TripPointEdit extends Component {
 
   }
 
+  get tripTypeIcon() {
+    if (typeof this._state.icon !== `undefined`) {
+      return this._state.icon;
+    }
+    return ``;
+  }
+
+  get destinationName() {
+    if (typeof this._state.city !== `undefined`) {
+      return this._state.city.name;
+    }
+    return ``;
+  }
+
+  get destinationDescription() {
+    if (typeof this._state.city !== `undefined`) {
+      return this._state.city.description;
+    }
+    return ``;
+  }
+
+  get destinationPictures() {
+    if (typeof this._state.city !== `undefined`) {
+      return this._state.city.pictures;
+    }
+    return ``;
+  }
+
   get template() {
     return `
       <article class="point">
         <form class="point__form" action="" method="get">
           <fieldset class="point__form-fieldset" style="border: none">
             <header class="point__header">
-              <label class="point__date">
-                choose day
-                <input 
-                  class="point__input" 
-                  type="text" 
-                  placeholder="MAR 18"
-                  name="day"
-                >
-              </label>
-        
               <div class="travel-way">
-                <label class="travel-way__label" for="travel-way__toggle">${this._state.icon}️</label>
+                <label class="travel-way__label" for="travel-way__toggle">${this.tripTypeIcon}️
+                </label>
         
                 <input type="checkbox" class="travel-way__toggle visually-hidden" id="travel-way__toggle">
         
@@ -146,8 +165,9 @@ class TripPointEdit extends Component {
                   class="point__destination-input" 
                   list="destination-select" 
                   id="destination" 
-                  value=${this._state.city.name} 
+                  value="${this.destinationName}" 
                   name="destination"
+                  placeholder="choose destination"
                 >
                 <datalist id="destination-select">
                   ${tripPointEditDestinations(this._props.cities)}
@@ -176,7 +196,7 @@ class TripPointEdit extends Component {
                 write price
                 <span class="point__price-currency">€</span>
                 <input 
-                  class="point__input" 
+                  class="point__input point__input--price" 
                   type="text" 
                   value="${this._state.price ? this._state.price : ``}" 
                   name="price"
@@ -212,10 +232,10 @@ class TripPointEdit extends Component {
               <section class="point__destination">
                 <h3 class="point__details-title">Destination</h3>
                 <p class="point__destination-text">
-                  ${this._state.city.description}
+                  ${this.destinationDescription}
                 </p>
                 <div class="point__destination-images">
-                  ${tripPointEditPictures(this._state.city.pictures)};
+                  ${tripPointEditPictures(this.destinationPictures)}
                 </div>
               </section>
               <input type="hidden" class="point__total-price" name="total-price" value="">
