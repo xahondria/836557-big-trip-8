@@ -28,7 +28,6 @@ class API {
     })
       .then((response) => response.json())
       .then((tripPoints) => {
-        console.log(tripPoints);
         return tripPoints.map((tripPoint) => ({
           id: tripPoint.id,
           icon: this.tripPointIcons[tripPoint.type],

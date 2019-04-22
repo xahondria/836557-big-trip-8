@@ -173,15 +173,12 @@ const newTripPointEditOptions = () => {
         formIsValid = false;
         element.querySelector(`.point__destination-input`).setAttribute(`style`, `background-color: rgba(255,0,0,0.3)`);
       }
-      console.log(this.getState().price);
-      console.log((Number.isInteger(parseInt(this.getState().price, 10))));
       if (!(Number.isInteger(parseInt(this.getState().price, 10)))) {
         formIsValid = false;
         element.querySelector(`.point__input--price`).setAttribute(`style`, `background-color: rgba(255,0,0,0.3)`);
       }
 
       if (!formIsValid) {
-        console.log(formIsValid);
         element.setAttribute(`style`, `border: red 1px solid`);
         element.classList.add(`shake`);
         element.querySelector(`.point__button--save`).innerText = `Save`;
@@ -305,7 +302,6 @@ function updateTotalPrice() {
 }
 
 const rerenderList = () => {
-  console.log(currentlyRenderedObjects);
   // Фильтрация
   currentlyRenderedObjects.filteredTripPoints = getFilteredTripPoints(currentlyRenderedObjects.tripPoints, window._options.filter);
 

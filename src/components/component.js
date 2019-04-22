@@ -32,7 +32,6 @@ class Component {
   }
 
   updateComponent(element) {
-    console.log(element);
     if (element._currentComponent) {
       element._currentComponent.unbind();
     }
