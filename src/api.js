@@ -1,4 +1,4 @@
-import tripPointsIcons from "./constants/tripPointIcons";
+import tripPointsIcons from "./constants/trip-point-icons";
 
 const Methods = {
   GET: `GET`,
@@ -15,7 +15,7 @@ const checkStatus = (response) => {
   }
 };
 
-class API {
+class Api {
   constructor({endPoint, authorization}) {
     this._endPoint = endPoint.replace(/\/$/, ``);
     this._authorization = authorization;
@@ -133,7 +133,7 @@ class API {
   }
 }
 
-export default new API({
+export default new Api({
   endPoint: `https://es8-demo-srv.appspot.com/big-trip`,
   authorization: `Basic 4c4e0439-63c9-42b5-9679-2749dc729f33`
 });

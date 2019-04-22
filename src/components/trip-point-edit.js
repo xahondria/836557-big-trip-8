@@ -3,7 +3,7 @@ import Component from "./component";
 import tripPointEditDestinations from "./trip-point-edit-destinations";
 import moment from "moment";
 import tripPointEditOffers from "./trip-point-edit-offers";
-import tripPointIcons from "../constants/tripPointIcons";
+import tripPointIcons from "../constants/trip-point-icons";
 import {getCache} from '../cache';
 import tripPointEditPictures from "./trip-point-edit-pictures";
 

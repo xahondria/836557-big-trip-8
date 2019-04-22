@@ -7,9 +7,9 @@ import TripPointEdit from "./components/trip-point-edit";
 import currentlyRenderedObjects from "./currently-rendered-objects";
 import moment from "moment";
 import setChart from "./components/stats";
-import API from "./api";
+import api from "./api";
 import {storeCache} from "./cache";
-import tripPointsIcons from "./constants/tripPointIcons";
+import tripPointsIcons from "./constants/trip-point-icons";
 
 window._options = {
   sort: `event_asc`,
@@ -94,7 +94,7 @@ const tripPointEditOptions = (tripPoint) => {
       element.querySelector(`.point__button--save`).innerText = `Saving...`;
       element.querySelector(`.point__form-fieldset`).setAttribute(`disabled`, ``);
 
-      API.updateTripPoint(currentState)
+      api.updateTripPoint(currentState)
         .then((newTripPoint) => {
           const newState = {
             id: newTripPoint.id,
@@ -135,7 +135,7 @@ const tripPointEditOptions = (tripPoint) => {
       element.querySelector(`.point__button--delete`).innerText = `Deleting...`;
       element.querySelector(`.point__form-fieldset`).setAttribute(`disabled`, ``);
 
-      API.deleteTripPoint(this._state.id)
+      api.deleteTripPoint(this._state.id)
       .then(() => {
         this.unrender();
         currentlyRenderedObjects.tripPoints = currentlyRenderedObjects.tripPoints.filter((tp) => tp !== tripPoint);
@@ -186,7 +186,7 @@ const newTripPointEditOptions = () => {
         return;
       }
 
-      API.createTripPoint(currentState)
+      api.createTripPoint(currentState)
         .then((newTripPoint) => {
           const newState = {
             id: newTripPoint.id,
@@ -358,9 +358,9 @@ function rerenderCharts() {
 document.querySelector(`.trip-points`).innerText = `Loading route...`;
 
 Promise.all([
-  API.getTripPoints(),
-  API.getTripPointDestinations(),
-  API.getTripPointOffers(),
+  api.getTripPoints(),
+  api.getTripPointDestinations(),
+  api.getTripPointOffers(),
 ]).then(([tripPoints, destinations, offers]) => {
   storeCache(`destinations`, destinations);
   storeCache(`offers`, offers);
