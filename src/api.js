@@ -127,7 +127,7 @@ class API {
     )
       .then(checkStatus)
       .catch((err) => {
-        console.error(`fetch error: ${err}`);
+        // console.error(`fetch error: ${err}`);
         throw err;
       });
   }
