@@ -38,6 +38,7 @@ class Component {
     const newElement = this.render();
     element.replaceWith(newElement);
     newElement._currentComponent = this;
+    return newElement;
   }
 
   createElement(template) {
@@ -51,6 +52,10 @@ class Component {
     this._element._currentComponent = this;
     this.bind();
     return this._element;
+  }
+
+  renderToTop(container) {
+    container.insertBefore(this._element, container.firstChild);
   }
 
   unrender() {

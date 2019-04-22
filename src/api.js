@@ -56,12 +56,24 @@ class API {
       .then((offers) => offers));
   }
 
-  createTripPoint(newTripPoint) {
+  createTripPoint(state) {
+    const newTripPoint = {
+      'id': state.id,
+      'base_price': state.price,
+      'date_from': state.startTime,
+      'date_to': state.endTime,
+      'destination': state.city,
+      'is_favorite': state.isFavorite,
+      'offers': state.offers,
+      'type': state.tripType,
+    };
+
     return this._request({
       url: `/points`,
       method: Methods.POST,
       body: newTripPoint,
-    });
+    }).then((response) => response.json()
+      .then((tripPoint) => tripPoint));
   }
 
   updateTripPoint(state) {
@@ -76,7 +88,7 @@ class API {
       'type': state.tripType,
     };
     return this._request({
-      url: `/point5s/${state.id}`,
+      url: `/points/${state.id}`,
       method: Methods.PUT,
       body: newTripPoint,
     }).then((response) => response.json()

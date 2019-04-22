@@ -152,6 +152,108 @@ const tripPointEditOptions = (tripPoint) => {
   };
 };
 
+const newTripPointEditOptions = () => {
+  return {
+    onSave(ev) {
+      ev.preventDefault();
+      const currentState = this.getState();
+
+      const element = this.updateComponent(ev.currentTarget.closest(`.point`));
+      element.querySelector(`.point__button--save`).innerText = `Saving...`;
+      element.querySelector(`.point__form-fieldset`).setAttribute(`disabled`, ``);
+
+      // validation
+      let formIsValid = true;
+      if (this.getState().tripType === ``) {
+        formIsValid = false;
+        element.querySelector(`.travel-way__label`).setAttribute(`style`, `background-color: rgba(255,0,0,0.3)`);
+      }
+
+      if (this.getState().city.name === ``) {
+        formIsValid = false;
+        element.querySelector(`.point__destination-input`).setAttribute(`style`, `background-color: rgba(255,0,0,0.3)`);
+      }
+      if (!(Number.isInteger(parseInt(this.getState().price, 10)))) {
+        formIsValid = false;
+        element.querySelector(`.point__input--price`).setAttribute(`style`, `background-color: rgba(255,0,0,0.3)`);
+      }
+
+      if (!formIsValid) {
+        element.setAttribute(`style`, `border: red 1px solid`);
+        element.classList.add(`shake`);
+        element.querySelector(`.point__button--save`).innerText = `Save`;
+        element.querySelector(`.point__form-fieldset`).removeAttribute(`disabled`);
+        return;
+      }
+
+      API.createTripPoint(currentState)
+        .then((newTripPoint) => {
+          const newState = {
+            id: newTripPoint.id,
+            icon: tripPointsIcons[newTripPoint.type],
+            tripType: newTripPoint.type,
+            city: newTripPoint.destination,
+            startTime: newTripPoint.date_from,
+            endTime: newTripPoint.date_to,
+            price: newTripPoint.base_price,
+            isFavorite: newTripPoint.is_favorite,
+            offers: newTripPoint.offers,
+          };
+          currentlyRenderedObjects.tripPoints.push(new TripPoint(newState, tripPointOptions()));
+          rerenderList();
+        })
+        .catch(() => {
+          element.querySelector(`.point__form-fieldset`).removeAttribute(`disabled`);
+          element.querySelector(`.point__button--save`).innerText = `Save`;
+          element.setAttribute(`style`, `border: red 1px solid`);
+          element.classList.add(`shake`);
+        });
+      this.destroyFlatpickr();
+
+    },
+    onClose(ev) {
+      if (ev.key === `Escape`) {
+        ev.preventDefault();
+        this.destroyFlatpickr();
+        this.unrender();
+      }
+    },
+    onDelete(ev) {
+      ev.preventDefault();
+      this.destroyFlatpickr();
+      this.unrender();
+    },
+
+  };
+};
+
+function addNewTripPoint() {
+
+  const mockData = {
+    get id() {
+      return utils.getRandomInt(99999);
+    },
+    icon: ``,
+    tripType: ``,
+    city: {
+      description: ``,
+      name: ``,
+      pictures: [],
+    },
+    startTime: Date.now(),
+    endTime: Date.now(),
+    price: ``,
+    isFavorite: false,
+    offers: ``,
+  };
+
+  const TPE = new TripPointEdit(mockData, newTripPointEditOptions());
+  TPE.render();
+  TPE.renderToTop(document.querySelector(`.trip-points`));
+}
+
+document.querySelector(`.trip-controls__new-event`).addEventListener(`click`, addNewTripPoint);
+
 function updateSortTripPoints(array, sortType = `time_asc`) {
   switch (sortType) {
     case `event_asc`:
@@ -270,10 +372,11 @@ Promise.all([
   );
 
   rerenderList();
-}).catch(() => {
-  document.querySelector(`.trip-points`).innerText = `Something went wrong while loading your route info. Check your connection or try again later`;
-}
-);
+})
+// .catch(() => {
+//   document.querySelector(`.trip-points`).innerText = `Something went wrong while loading your route info. Check your connection or try again later`;
+// })
+;
 
 // сортировки
 document.querySelector(`#sorting-time`).addEventListener(`click`, function () {
