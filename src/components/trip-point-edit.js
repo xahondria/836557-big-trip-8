@@ -246,22 +246,6 @@ class TripPointEdit extends Component {
     `.trim();
   }
 
-  _getFormData(form) {
-    const formData = new FormData(form.querySelector(`.point`));
-
-    const TripPointEditMapper = this.createTripPointEditMapper(this._state);
-
-    for (const pair of formData.entries()) {
-      const [property, value] = pair;
-      if (TripPointEditMapper[property]) {
-        TripPointEditMapper[property](value);
-      }
-    }
-  }
-
-  createTripPointEditMapper() {
-  }
-
   destroyFlatpickr() {
     if (this.startTimePicker) {
       this.startTimePicker.destroy();
@@ -340,7 +324,7 @@ class TripPointEdit extends Component {
     this._element.querySelector(`.travel-way__select`)
       .addEventListener(`change`, this._onTripTypeChange);
     this._element.querySelector(`.point__destination-input`)
-      .addEventListener(`change`, this._onDestinationChange);
+      .addEventListener(`blur`, this._onDestinationChange);
 
     this.startTimePicker = flatpickr(
         this._element.querySelector(`.date-start`),
@@ -373,6 +357,7 @@ class TripPointEdit extends Component {
 
   unbind() {
     document.removeEventListener(`keydown`, this.onClose);
+    this.destroyFlatpickr();
   }
 
 }

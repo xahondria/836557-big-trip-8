@@ -40,7 +40,7 @@ class TripPoint extends Component {
 
   get duration() {
     const duration = this._state.endTime - this._state.startTime;
-    return duration >= 0 ? moment.duration(duration).format(`H[` + `H ` + `]mm[` + `M` + `]`) : ``;
+    return duration >= 0 ? moment.duration(duration).format(`DD[` + `D ` + `]H[` + `H ` + `]mm[` + `M` + `]`) : ``;
   }
 
   get tripTypeIcon() {

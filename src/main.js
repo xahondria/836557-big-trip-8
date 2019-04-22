@@ -425,9 +425,3 @@ statsButton.addEventListener((`click`), function () {
 
   setChart(statsElement, getFilteredTripPoints(currentlyRenderedObjects.tripPoints, window._options.filter));
 });
-
-// TODO сделать new event
-// TODO сделать сбор данных по _getFormData
-// TODO сделать статистику
-// TODO менять total в правом верхнем углу
-// TODO менять описание поездки и даты в хедере
