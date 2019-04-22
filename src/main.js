@@ -2,7 +2,7 @@ import Filter from "./components/filter";
 import TripPoint from "./components/trip-point";
 import TripDay from "./components/trip-day";
 import utils from "./utils";
-import FILTERS_DATA from "./mock/filters-data";
+import FILTERS_DATA from "./constants/filters-data";
 import TripPointEdit from "./components/trip-point-edit";
 import currentlyRenderedObjects from "./currently-rendered-objects";
 import moment from "moment";
